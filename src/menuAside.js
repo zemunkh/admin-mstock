@@ -2,7 +2,7 @@ import { mdiMonitor } from "@mdi/js";
 
 export default [
   {
-    to: "/dashboard",
+    to: "/",
     icon: mdiMonitor,
     label: "Dashboard",
   },

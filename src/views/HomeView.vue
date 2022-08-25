@@ -4,8 +4,9 @@ import { ref, onMounted } from "vue";
 import * as chartConfig from "@/components/Charts/chart.config.js";
 import SectionMain from "@/components/SectionMain.vue";
 import CardBox from "@/components/CardBox.vue";
-import TableSampleClients from "@/components/TableSampleClients.vue";
+// import TableSampleClients from "@/components/TableSampleClients.vue";
 import LayoutAuthenticated from "@/layouts/LayoutAuthenticated.vue";
+import TableLog from "../components/Table/TableLog.vue";
 
 const chartData = ref(null);
 
@@ -24,7 +25,7 @@ onMounted(() => {
   <LayoutAuthenticated>
     <SectionMain>
       <CardBox has-table>
-        <TableSampleClients />
+        <TableLog />
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>
