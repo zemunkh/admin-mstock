@@ -49,6 +49,7 @@ router.post('/counter/create', (req, res) => {
     req.body.totalQty,
     req.body.purchasePrice,
     req.body.uom,
+    req.body.shiftDate,
     req.body.updated_at,
     req.body.created_at,
   ],
@@ -60,8 +61,8 @@ router.post('/counter/create', (req, res) => {
       loggingDb.insert([
         'create',
         rows.stockId,
-        rows.stockCode,
         rows.stockName,
+        rows.stockCode,
         rows.machine,
         rows.shift,
         rows.category,
@@ -71,6 +72,7 @@ router.post('/counter/create', (req, res) => {
         rows.totalQty,
         rows.purchasePrice,
         rows.uom,
+        rows.shiftDate,
         rows.created_at,
       ],
       (err) => {
@@ -117,8 +119,8 @@ router.delete('/counter/delete', async (req, res) => {
     loggingDb.insert([
       'delete',
       rows.stockId,
-      rows.stockCode,
       rows.stockName,
+      rows.stockCode,
       rows.machine,
       rows.shift,
       rows.category,
@@ -128,6 +130,7 @@ router.delete('/counter/delete', async (req, res) => {
       rows.totalQty,
       rows.purchasePrice,
       rows.uom,
+      rows.shiftDate, 
       rows.created_at,
     ],
     (id, err) => {
@@ -162,8 +165,8 @@ router.post('/counter/updateQty', async (req, res) => {
       loggingDb.insert([
         'update',
         rows.stockId,
-        rows.stockCode,
         rows.stockName,
+        rows.stockCode,
         rows.machine,
         rows.shift,
         rows.category,
@@ -173,6 +176,7 @@ router.post('/counter/updateQty', async (req, res) => {
         rows.totalQty,
         rows.purchasePrice,
         rows.uom,
+        rows.shiftDate, 
         rows.created_at,
       ],
       (id, err) => {
@@ -201,8 +205,8 @@ router.post('/counter/updateWeight', async (req, res) => {
       loggingDb.insert([
         'update',
         rows.stockId,
-        rows.stockCode,
         rows.stockName,
+        rows.stockCode,
         rows.machine,
         rows.shift,
         rows.category,
@@ -212,6 +216,7 @@ router.post('/counter/updateWeight', async (req, res) => {
         rows.totalQty,
         rows.purchasePrice,
         rows.uom,
+        rows.shiftDate, 
         rows.created_at,
       ],
       (id, err) => {
@@ -264,7 +269,7 @@ app.get('/', (req, res) => {
 
 scheduledFunctions.initScheduledJobs();
 
-let port = process.env.PORT || 3000;
+let port = process.env.PORT || 8080;
 // Create Server
 var server = app.listen(port, () => {
   var port = server.address().port

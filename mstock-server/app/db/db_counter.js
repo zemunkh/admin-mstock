@@ -24,6 +24,7 @@ class Db {
         totalQty INTEGER,
         purchasePrice REAL,
         uom TEXT,
+        shiftDate TEXT,
         updated_at TEXT,
         created_at TEXT)`
     return this.db.run(sql);
@@ -32,7 +33,7 @@ class Db {
   insert(counter, callback) {
     console.log('Counter insert: 👉 ', counter)
     return this.db.run(
-      'INSERT INTO counter (stockId,stockCode,stockName,machine,shift,category,stockGroup,class,weight,qty,totalQty,purchasePrice,uom,updated_at,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      'INSERT INTO counter (stockId,stockCode,stockName,machine,shift,category,stockGroup,class,weight,qty,totalQty,purchasePrice,uom,shiftDate,updated_at,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
       counter, function (err) {
         return callback(this.lastID, err)
       })
