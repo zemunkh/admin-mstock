@@ -31,7 +31,7 @@ class Db {
   }
 
   insert(counter, callback) {
-    console.log('Counter insert: 👉 ', counter)
+    // console.log('Counter insert: 👉 ', counter)
     return this.db.run(
       'INSERT INTO counter (stockId,stockCode,stockName,machine,shift,category,stockGroup,class,weight,qty,totalQty,purchasePrice,uom,shiftDate,updated_at,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
       counter, function (err) {
@@ -77,7 +77,7 @@ class Db {
 
   selectByMachine(machine, callback) {
     return this.db.all(
-    `SELECT * FROM counter WHERE machine = ? ORDER BY updated_at ASC`,
+    `SELECT * FROM counter WHERE qty > 0 AND machine = ? ORDER BY updated_at ASC`,
     [machine],function(err,rows){
       callback(err,rows)
     })
@@ -92,7 +92,7 @@ class Db {
   } 
 
   updateId(counter, callback) {
-    console.log('Counter update: 👉 ', counter)
+    // console.log('Counter update: 👉 ', counter)
     return this.db.run(
       'UPDATE counter SET stockId = ?, stockCode = ?, stockName = ?, machine = ?, shift = ?, category = ?, stockGroup = ?, class = ?, weight = ?, qty = ?, totalQty = ?, purchasePrice = ?, baseUOM = ?,  WHERE id = ?',
       [counter.id], (err) => {
@@ -101,7 +101,7 @@ class Db {
   }
 
   updateQty(counter, callback) {
-    console.log('Counter by id: 👉 ', counter)
+    // console.log('Counter by id: 👉 ', counter)
     return this.db.run(
       // 'UPDATE counter SET qty = ?, totalQty = ?, updated_at = ? WHERE id = ?',
       'UPDATE counter SET qty = ?, totalQty = ?, updated_at = ? WHERE id = ?',
@@ -111,7 +111,7 @@ class Db {
   }
 
   updateWeight(counter, callback) {
-    console.log('Counter by id: 👉 ', counter)
+    // console.log('Counter by id: 👉 ', counter)
     return this.db.run(
       'UPDATE counter SET weight = ?, updated_at = ? WHERE id = ?',
       counter, (err) => {
