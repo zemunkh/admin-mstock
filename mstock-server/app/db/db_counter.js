@@ -45,6 +45,12 @@ class Db {
     })
   }
 
+  selectAllZeroQty(callback) {
+    return this.db.all(`SELECT * FROM counter WHERE qty = 0`,function(err,rows){
+      callback(err,rows)
+    })
+  }
+
   selectById(id, callback) {
     return this.db.get(
     `SELECT * FROM counter WHERE id = ?`,

@@ -1,65 +1,48 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
-import { useMainStore } from "@/stores/main";
-import { mdiEye } from "@mdi/js";
+import Datepicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+import { onMounted, ref } from "vue";
+// import { useMainStore } from "@/stores/main";
+import { mdiEye, mdiArrowBottomLeft } from "@mdi/js";
 import CardBoxModal from "@/components/CardBoxModal.vue";
 // import TableCheckboxCell from "@/components/TableCheckboxCell.vue";
 import PillTag from "@/components/PillTag.vue";
-import BaseLevel from "@/components/BaseLevel.vue";
 import BaseButtons from "@/components/BaseButtons.vue";
 import BaseButton from "@/components/BaseButton.vue";
-import moment from 'moment';
+import moment from "moment";
+import CardBox from "../CardBox.vue";
 // import UserAvatar from "@/components/UserAvatar.vue";
 
 defineProps({
   checkable: Boolean,
 });
-
-const mainStore = useMainStore();
-
-const items = computed(() => mainStore.clients);
-
+const today = new Date();
 const isModalActive = ref(false);
-
-const perPage = ref(5);
-
-const currentPage = ref(0);
-
 const checkedRows = ref([]);
+
+const startDate = ref(null);
+const endDate = ref(today);
 
 const logData = ref(null);
 const error = ref(null);
 
-onMounted(() => {
-  fetch('http://localhost:8080/logging/all')
-    .then((res) => {
-      console.log('Response: ', res);
-      return res.json();
-    })
+onMounted(async () => {
+  startDate.value = new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000);
+  await fetch(`http://localhost:8080/logging/range?
+    start=${startDate.value.toISOString()}&end=${endDate.value.toISOString()}`)
+    .then((res) => res.json())
     .then((json) => (logData.value = json))
     .catch((err) => (error.value = err));
 });
 
-// const itemsPaginated = computed(() =>
-//   items.value.slice(
-//     perPage.value * currentPage.value,
-//     perPage.value * (currentPage.value + 1)
-//   )
-// );
-
-const numPages = computed(() => Math.ceil(items.value.length / perPage.value));
-
-const currentPageHuman = computed(() => currentPage.value + 1);
-
-const pagesList = computed(() => {
-  const pagesList = [];
-
-  for (let i = 0; i < numPages.value; i++) {
-    pagesList.push(i);
-  }
-
-  return pagesList;
-});
+const fetchDataByRange = () => {
+  fetch(
+    `http://localhost:8080/logging/range?start=${startDate.value.toISOString()}&end=${endDate.value.toISOString()}`
+  )
+    .then((res) => res.json())
+    .then((json) => (logData.value = json))
+    .catch((err) => (error.value = err));
+}
 
 const actionColor = (action) => {
   if (action === "create") {
@@ -112,79 +95,90 @@ const actionColor = (action) => {
     </span>
   </div>
 
-  <!-- <div>
-    <h6>Data:</h6>
-    <p>{{ logData }}</p>
-  </div> -->
+  <CardBox>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <div class="flex flex-col justify-between">
+        <h2>Start date:</h2>
+        <Datepicker v-model="startDate"></Datepicker>
+      </div>
+      <div class="flex flex-col justify-between">
+        <h2>End date:</h2>
+        <Datepicker v-model="endDate"></Datepicker>
+      </div>
+    </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th v-if="checkable" />
-        <th>Action</th>
-        <th>Stock Code</th>
-        <th>Stock Name</th>
-        <th>Machine</th>
-        <th>Shift</th>
-        <th>Created At</th>
-        <th />
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="log in logData" :key="log.id">
-        <!-- <TableCheckboxCell
-          v-if="checkable"
-          @checked="checked($event, log)"
-        /> -->
-        <td data-label="Action">
-          <PillTag :color="actionColor(log.action)" :label="log.action" small />
-        </td>
-        <td data-label="StockCode">
-          {{ log.stockCode }}
-        </td>
-        <td data-label="StockName">
-          {{ log.stockName }}
-        </td>
-        <td data-label="Machine">
-          {{ log.machine }}
-        </td>
-        <td data-label="Shift">
-          {{ log.shift }}
-        </td>
-        <td data-label="Created" class="lg:w-1 whitespace-nowrap">
-          <small
-            class="text-gray-500 dark:text-slate-400"
-            :title="moment(new Date(log.created_at)).format('LLLL')"
-            >{{ moment(new Date(log.created_at)).format('MM/DD/YYYY, h:mm a') }}</small
-          >
-        </td>
-        <td class="before:hidden lg:w-1 whitespace-nowrap">
-          <BaseButtons type="justify-start lg:justify-end" no-wrap>
-            <BaseButton
-              color="info"
-              :icon="mdiEye"
-              small
-              @click="isModalActive = true"
-            />
-          </BaseButtons>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="p-3 lg:px-6 border-t border-gray-100 dark:border-slate-800">
-    <BaseLevel>
-      <BaseButtons>
+    <div class="grid grid-cols-1">
+      <div class="flex flex-col justify-between">
         <BaseButton
-          v-for="page in pagesList"
-          :key="page"
-          :active="page === currentPage"
-          :label="page + 1"
-          :color="page === currentPage ? 'lightDark' : 'whiteDark'"
-          small
-          @click="currentPage = page"
-        />
-      </BaseButtons>
-      <small>Page {{ currentPageHuman }} of {{ numPages }}</small>
-    </BaseLevel>
-  </div>
+          :icon="mdiArrowBottomLeft"
+          color="info"
+          label="Fetch data"
+          @click="fetchDataByRange()"
+        ></BaseButton>
+      </div>
+    </div>
+  </CardBox>
+
+  <CardBox has-table>
+    <table>
+      <thead>
+        <tr>
+          <th v-if="checkable" />
+          <th>Action</th>
+          <th>Stock Code</th>
+          <th>Stock Name</th>
+          <th>Machine</th>
+          <th>Shift</th>
+          <th>Created At</th>
+          <th />
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="log in logData" :key="log.id">
+          <!-- <TableCheckboxCell
+            v-if="checkable"
+            @checked="checked($event, log)"
+          /> -->
+          <td data-label="Action">
+            <PillTag
+              :color="actionColor(log.action)"
+              :label="log.action"
+              small
+            />
+          </td>
+          <td data-label="StockCode">
+            {{ log.stockCode }}
+          </td>
+          <td data-label="StockName">
+            {{ log.stockName }}
+          </td>
+          <td data-label="Machine">
+            {{ log.machine }}
+          </td>
+          <td data-label="Shift">
+            {{ log.shift }}
+          </td>
+          <td data-label="Created" class="lg:w-1 whitespace-nowrap">
+            <small
+              class="text-gray-500 dark:text-slate-400"
+              :title="moment(new Date(log.created_at)).format('LLLL')"
+              >{{
+                moment(new Date(log.created_at)).format("MM/DD/YYYY, h:mm a")
+              }}</small
+            >
+          </td>
+          <td class="before:hidden lg:w-1 whitespace-nowrap">
+            <BaseButtons type="justify-start lg:justify-end" no-wrap>
+              <BaseButton
+                color="info"
+                :icon="mdiEye"
+                small
+                @click="isModalActive = true"
+              />
+            </BaseButtons>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </CardBox>
 </template>

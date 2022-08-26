@@ -44,6 +44,13 @@ class DbLog {
     })
   }
 
+  selectByRange(dates, callback) {
+    return this.db.all(`SELECT * FROM logging WHERE created_at >= ? AND created_at <= ? ORDER BY created_at`, 
+    dates, function(err,rows){
+      callback(err,rows)
+    })
+  }
+
   deleteById(id, callback) {
     return this.db.run(
       'DELETE FROM logging WHERE id = ?',

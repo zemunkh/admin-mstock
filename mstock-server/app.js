@@ -2,8 +2,32 @@ var express = require('express');
 var app = express();
 const router = express.Router();
 const cors = require('cors');
-const scheduledFunctions = require('./app/cron');
 var bodyParser = require('body-parser');
+var cron = require('node-cron');
+
+var task = cron.schedule('* */12 * * *', () =>  {
+  var now = new Date();
+  console.log("Started at: ", now.toISOString());
+
+  counterDb.selectAllZeroQty((err, rows) => {
+    if(err) return []
+    rows.forEach(el => {
+      var logDate = new Date(el.created_at);
+      var diff = new Date(now.getTime() - logDate.getTime());
+      var diffHours = diff.getHours();
+      console.log(`Diff hours: ${diffHours}`);
+      if(diffHours >= 24) {
+        console.log(`Stock Name: ${el.stockCode} : ${el.totalQty} : ${el.created_at}`);
+        counterDb.deleteById(el.id);
+      }
+    });
+  })
+}, {
+  scheduled: false
+});
+
+task.start();
+
 
 app.use(bodyParser.urlencoded({ 
   extended: true
@@ -242,8 +266,30 @@ router.get('/counter/machine', (req, res) => {
   })
 });
 
+
 router.get('/logging/all', (req, res) => {
   loggingDb.selectAll((err, rows) => {
+    if(err) return res.status(500).send("Problem occurred during getting log data");
+    res.status(200).send(rows);
+  })
+});
+
+
+router.get('/logging/range', (req, res) => {
+  if(req.query.start == null) {
+    const today = new Date();
+    req.query.start = new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000);
+  }
+  var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+  var localStart = (new Date(new Date(req.query.start) - tzoffset)).toISOString().slice(0, -1);
+  var localEnd = (new Date(new Date(req.query.end) - tzoffset)).toISOString().slice(0, -1);
+
+  console.log(`👉 Dates: ${localStart} : ${localEnd}`)
+
+  loggingDb.selectByRange([
+    localStart,
+    localEnd
+  ], (err, rows) => {
     if(err) return res.status(500).send("Problem occurred during getting log data");
     res.status(200).send(rows);
   })
@@ -258,7 +304,6 @@ router.delete('/logging/delete', async (req, res) => {
     if(err) return res.status(500).send("Problem occurred during deleting counter");
     res.status(200).send({id: req.body.id});
   });
-
 });
 
 app.use('/', router);
@@ -266,8 +311,6 @@ app.use('/', router);
 app.get('/', (req, res) => {
   res.json({message: "First connection is ok! 👌🏼"});
 });
-
-scheduledFunctions.initScheduledJobs();
 
 let port = process.env.PORT || 8080;
 // Create Server
