@@ -7,7 +7,7 @@ var cron = require('node-cron');
 
 var task = cron.schedule('* */12 * * *', () =>  {
   var now = new Date();
-  console.log("Started at: ", now.toISOString());
+  // console.log("Started at: ", now.toISOString());
 
   counterDb.selectAllZeroQty((err, rows) => {
     if(err) return []
@@ -15,7 +15,7 @@ var task = cron.schedule('* */12 * * *', () =>  {
       var logDate = new Date(el.created_at);
       var diff = new Date(now.getTime() - logDate.getTime());
       var diffHours = diff.getHours();
-      console.log(`Diff hours: ${diffHours}`);
+      // console.log(`Diff hours: ${diffHours}`);
       if(diffHours >= 24) {
         console.log(`Stock Name: ${el.stockCode} : ${el.totalQty} : ${el.created_at}`);
         counterDb.deleteById(el.id);

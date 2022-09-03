@@ -115,13 +115,14 @@ const actionColor = (action) => {
     </div>
   </CardBox>
 
-  <CardBox>
+  <CardBox class="w-full">
     <DataTable
       v-model:filters="filters"
       :value="logData"
       responsive-layout="scroll"
       :global-filter-fields="[
         'stockName',
+        'stockCode',
         'action',
         'machine',
         'shift',
