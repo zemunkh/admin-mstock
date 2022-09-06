@@ -5,7 +5,7 @@ const cors = require('cors');
 var bodyParser = require('body-parser');
 var cron = require('node-cron');
 
-var task = cron.schedule('* */12 * * *', () =>  {
+var task = cron.schedule('* */24 * * *', () =>  {
   var now = new Date();
   // console.log("Started at: ", now.toISOString());
 
@@ -123,6 +123,7 @@ router.get('/counter/stock/machine', (req, res) => {
   ],
     (err, rows) => {
     if(err) return res.status(500).send("Problem occurred during getting counters");
+    console.log('res: 👉 ', rows);
     res.status(200).send(rows);
   })
 });

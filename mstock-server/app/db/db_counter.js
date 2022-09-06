@@ -77,7 +77,7 @@ class Db {
 
   selectByMachine(machine, callback) {
     return this.db.all(
-    `SELECT * FROM counter WHERE qty > 0 AND machine = ? ORDER BY updated_at ASC`,
+    `SELECT * FROM counter WHERE machine = ? ORDER BY updated_at ASC`,
     [machine],function(err,rows){
       callback(err,rows)
     })

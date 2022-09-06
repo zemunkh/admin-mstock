@@ -92,7 +92,7 @@ const actionColor = (action) => {
   </CardBoxModal>
 
   <CardBox>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="grid grid-cols-3 lg:grid-cols-3 gap-6 mb-6">
       <div class="flex flex-col justify-between">
         <h2>Start date:</h2>
         <Datepicker v-model="startDate"></Datepicker>
@@ -101,11 +101,10 @@ const actionColor = (action) => {
         <h2>End date:</h2>
         <Datepicker v-model="endDate"></Datepicker>
       </div>
-    </div>
-
-    <div class="grid grid-cols-1">
       <div class="flex flex-col justify-between">
+        <h2></h2>
         <BaseButton
+          class="w-1/2 mx-auto"
           :icon="mdiArrowBottomLeft"
           color="info"
           label="Fetch data"
