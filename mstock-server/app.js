@@ -137,6 +137,7 @@ router.get('/counter/order', (req, res) => {
 });
 
 router.delete('/counter/delete', async (req, res) => {
+  const updatedTime = new Date();
   // console.log("Delete ID 👉: ", req.body.id);
   counterDb.selectById(parseInt(req.body.id), (err, rows) => {
     if(err) return res.status(500).send("Problem occurred during getting counters");
@@ -156,7 +157,7 @@ router.delete('/counter/delete', async (req, res) => {
       rows.purchasePrice,
       rows.uom,
       rows.shiftDate, 
-      rows.created_at,
+      updatedTime.toISOString(),
     ],
     (id, err) => {
       if(err) return res.status(500).send("Problem ocurred during fetching Counter");
@@ -173,6 +174,7 @@ router.delete('/counter/delete', async (req, res) => {
 });
 
 router.post('/counter/updateQty', async (req, res) => {
+  const updatedTime = new Date();
   console.log("ID: ", req.body.id);
   counterDb.updateQty(
     [
@@ -202,7 +204,7 @@ router.post('/counter/updateQty', async (req, res) => {
         rows.purchasePrice,
         rows.uom,
         rows.shiftDate, 
-        rows.created_at,
+        updatedTime.toISOString(),
       ],
       (id, err) => {
         if(err) return res.status(500).send("Problem ocurred during creating Counter");
@@ -241,7 +243,7 @@ router.post('/counter/updateWeight', async (req, res) => {
         rows.purchasePrice,
         rows.uom,
         rows.shiftDate, 
-        rows.created_at,
+        updatedTime.toISOString(),
       ],
       (id, err) => {
         if(err) return res.status(500).send("Problem ocurred during creating Counter");
@@ -284,7 +286,7 @@ router.get('/logging/range', (req, res) => {
   var localStart = (new Date(new Date(req.query.start) - tzoffset)).toISOString().slice(0, -1);
   var localEnd = (new Date(new Date(req.query.end) - tzoffset)).toISOString().slice(0, -1);
 
-  // console.log(`👉 Dates: ${localStart} : ${localEnd}`)
+  console.log(`👉 Dates: ${localStart} : ${localEnd}`)
 
   loggingDb.selectByRange([
     localStart,

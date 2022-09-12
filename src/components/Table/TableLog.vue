@@ -49,6 +49,18 @@ const filters = ref({
     operator: FilterOperator.OR,
     constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }],
   },
+  group: {
+    operator: FilterOperator.OR,
+    constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }],
+  },
+  uom: {
+    operator: FilterOperator.OR,
+    constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }],
+  },
+  class: {
+    operator: FilterOperator.OR,
+    constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }],
+  },
   action: {
     operator: FilterOperator.OR,
     constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }],
@@ -92,7 +104,7 @@ const actionColor = (action) => {
   </CardBoxModal>
 
   <CardBox>
-    <div class="grid grid-cols-3 lg:grid-cols-3 gap-6 mb-6">
+    <div class="grid grid-cols-4 lg:grid-cols-4 gap-6 mb-2">
       <div class="flex flex-col justify-between">
         <h2>Start date:</h2>
         <Datepicker v-model="startDate"></Datepicker>
@@ -111,9 +123,18 @@ const actionColor = (action) => {
           @click="fetchDataByRange()"
         ></BaseButton>
       </div>
+      <div class="flex flex-col justify-between align-items-center">
+        <FormField label="Search">
+          <FormControl
+            v-model="filters['global'].value"
+            type="text"
+            placeholder="Search text"
+          />
+        </FormField>
+      </div>
     </div>
   </CardBox>
-
+  <br />
   <CardBox class="w-full">
     <DataTable
       v-model:filters="filters"
@@ -126,20 +147,12 @@ const actionColor = (action) => {
         'machine',
         'shift',
         'category',
+        'group',
+        'uom',
+        'class',
         'created_at',
       ]"
     >
-      <template #header>
-        <div class="flex justify-content-center align-items-center">
-          <FormField label="Search" help="Below data table will be filtered">
-            <FormControl
-              v-model="filters['global'].value"
-              type="text"
-              placeholder="Search text"
-            />
-          </FormField>
-        </div>
-      </template>
       <Column field="action" header="Action" :sortable="true">
         <template #body="{ data }">
           <PillTag
@@ -157,7 +170,6 @@ const actionColor = (action) => {
       <Column field="category" header="Category" :sortable="true"></Column>
       <Column field="stockGroup" header="Group" :sortable="true"></Column>
       <Column field="class" header="Class" :sortable="true"></Column>
-      <Column field="purchasePrice" header="Price" :sortable="true"></Column>
       <Column field="uom" header="UOM" :sortable="true"></Column>
       <Column field="weight" header="Weight" :sortable="true"></Column>
       <Column field="created_at" header="Created At" :sortable="true">
