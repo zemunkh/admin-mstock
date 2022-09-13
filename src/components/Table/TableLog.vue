@@ -4,7 +4,6 @@ import "@vuepic/vue-datepicker/dist/main.css";
 import { onMounted, ref } from "vue";
 // import { useMainStore } from "@/stores/main";
 import { mdiArrowBottomLeft } from "@mdi/js";
-import CardBoxModal from "@/components/CardBoxModal.vue";
 // import TableCheckboxCell from "@/components/TableCheckboxCell.vue";
 import PillTag from "@/components/PillTag.vue";
 import BaseButton from "@/components/BaseButton.vue";
@@ -19,7 +18,6 @@ defineProps({
   checkable: Boolean,
 });
 const today = new Date();
-const isModalActive = ref(false);
 
 const startDate = ref(null);
 const endDate = ref(today);
@@ -98,11 +96,6 @@ const actionColor = (action) => {
 </script>
 
 <template>
-  <CardBoxModal v-model="isModalActive" title="Sample modal">
-    <p>Lorem ipsum dolor sit amet <b>adipiscing elit</b></p>
-    <p>This is sample modal</p>
-  </CardBoxModal>
-
   <CardBox>
     <div class="grid grid-cols-4 lg:grid-cols-4 gap-6 mb-2">
       <div class="flex flex-col justify-between">
