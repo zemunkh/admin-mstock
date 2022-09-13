@@ -95,7 +95,7 @@ router.post("/counter/create", (req, res) => {
         res.status(200).send(rows);
         loggingDb.insert(
           [
-            "create",
+            "new",
             rows.stockId,
             rows.stockName,
             rows.stockCode,
@@ -214,7 +214,7 @@ router.post("/counter/updateQty", async (req, res) => {
         res.status(200).send(rows);
         loggingDb.insert(
           [
-            "update",
+            `Update ${req.body.from}`,
             rows.stockId,
             rows.stockName,
             rows.stockCode,
@@ -258,7 +258,7 @@ router.post("/counter/updateWeight", async (req, res) => {
         res.status(200).send(rows);
         loggingDb.insert(
           [
-            "update",
+            "Update weight",
             rows.stockId,
             rows.stockName,
             rows.stockCode,
@@ -325,7 +325,7 @@ router.get("/logging/range", (req, res) => {
     .toISOString()
     .slice(0, -1);
 
-  // console.log(`👉 Dates: ${localStart} : ${localEnd}`);
+  // console.log(`👉 Dates: ${localStart} : ${localEnd}`)
 
   loggingDb.selectByRange([localStart, localEnd], (err, rows) => {
     if (err)
