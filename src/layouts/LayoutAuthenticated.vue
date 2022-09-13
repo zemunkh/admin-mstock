@@ -1,5 +1,5 @@
 <script setup>
-import { mdiForwardburger, mdiBackburger, mdiMenu } from "@mdi/js";
+// import { mdiForwardburger, mdiBackburger, mdiMenu } from "@mdi/js";
 import { useRouter } from "vue-router";
 // import menuAside from "@/menuAside.js";
 import menuNavBar from "@/menuNavBar.js";
@@ -18,7 +18,7 @@ useMainStore().setUser({
     "https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93",
 });
 
-const layoutAsidePadding = "xl:pl-60";
+// const layoutAsidePadding = "xl:pl-60";
 
 const styleStore = useStyleStore();
 
@@ -45,12 +45,11 @@ const menuClick = (event, item) => {
 <template>
   <div
     :class="{
-      dark: styleStore.darkMode,
       'overflow-hidden lg:overflow-visible': layoutStore.isAsideMobileExpanded,
     }"
   >
     <div
-      class="pt-14 min-h-screen w-screen transition-position lg:w-auto bg-gray-50 dark:bg-slate-800 dark:text-slate-100"
+      class="pt-1 min-h-screen w-screen transition-position lg:w-auto bg-gray-50"
     >
       <NavBar
         :menu="menuNavBar"
