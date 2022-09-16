@@ -34,7 +34,7 @@ class DbLog {
     return this.db.run(
       'INSERT INTO logging (action,stockId,stockName,stockCode,machine,shift,category,stockGroup,class,weight,totalQty,purchasePrice,uom,shiftDate,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
       logging, function (err) {
-        return callback(err)
+        return callback(this.lastID, err)
       })
   }
 

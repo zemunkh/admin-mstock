@@ -304,6 +304,37 @@ router.get("/counter/machine", (req, res) => {
   });
 });
 
+router.post("/logging/create", (req, res) => {
+  // console.log("Stock: 👉 ", req.body);
+  if (Object.keys(req.body).length === 0) {
+    return res.status(500).send("Null values received. Can't proceed.");
+  }
+  loggingDb.insert(
+    [
+      `New ${req.body.where}`,
+      req.body.stockId,
+      req.body.stockName,
+      req.body.stockCode,
+      req.body.machine,
+      req.body.shift,
+      req.body.category,
+      req.body.stockGroup,
+      req.body.class,
+      req.body.weight,
+      req.body.totalQty,
+      req.body.purchasePrice,
+      req.body.uom,
+      req.body.shiftDate,
+      req.body.created_at,
+    ],
+    (id, err) => {
+      if (err)
+        return res.status(500).send("Problem ocurred during creating logging");
+      res.status(200).send(id);
+    }
+  );
+});
+
 router.get("/logging/all", (req, res) => {
   loggingDb.selectAll((err, rows) => {
     if (err)
