@@ -84,11 +84,11 @@ const fetchDataByRange = () => {
 };
 
 const actionColor = (action) => {
-  if (action === "create") {
+  if (action.includes("new")) {
     return "success";
-  } else if (action === "update") {
+  } else if (action.includes("update")) {
     return "warning";
-  } else if (action === "delete") {
+  } else if (action.includes("delete")) {
     return "danger";
   }
   return "info";

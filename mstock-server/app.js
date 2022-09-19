@@ -214,7 +214,7 @@ router.post("/counter/updateQty", async (req, res) => {
         res.status(200).send(rows);
         loggingDb.insert(
           [
-            `Update ${req.body.from}`,
+            `update ${req.body.from}`,
             rows.stockId,
             rows.stockName,
             rows.stockCode,
@@ -258,7 +258,7 @@ router.post("/counter/updateWeight", async (req, res) => {
         res.status(200).send(rows);
         loggingDb.insert(
           [
-            "Update weight",
+            "update weight",
             rows.stockId,
             rows.stockName,
             rows.stockCode,
@@ -311,7 +311,7 @@ router.post("/logging/create", (req, res) => {
   }
   loggingDb.insert(
     [
-      `New ${req.body.where}`,
+      'new Loose Stock In',
       req.body.stockId,
       req.body.stockName,
       req.body.stockCode,
