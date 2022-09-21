@@ -84,7 +84,7 @@ router.post("/counter/create", (req, res) => {
       req.body.updated_at,
       req.body.created_at,
     ],
-    (id, err) => {
+    (err) => {
       if (err)
         return res.status(500).send("Problem ocurred during creating Counter");
       counterDb.selectById(id, (err, rows) => {
