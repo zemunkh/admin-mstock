@@ -3,12 +3,13 @@ import Datepicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import { onMounted, ref } from "vue";
 // import { useMainStore } from "@/stores/main";
-import { mdiArrowBottomLeft } from "@mdi/js";
+import { mdiArrowBottomLeft, mdiDelete } from "@mdi/js";
 // import TableCheckboxCell from "@/components/TableCheckboxCell.vue";
 import PillTag from "@/components/PillTag.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import FormControl from "@/components/FormControl.vue";
 import FormField from "@/components/FormField.vue";
+import CardBoxModal from "@/components/CardBoxModal.vue";
 import moment from "moment";
 import CardBox from "../CardBox.vue";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
@@ -24,6 +25,9 @@ const endDate = ref(today);
 
 const logData = ref(null);
 const error = ref(null);
+
+const isModalDeleteActive = ref(false);
+const isModalResultActive = ref(false);
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -47,7 +51,7 @@ const filters = ref({
     operator: FilterOperator.OR,
     constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }],
   },
-  group: {
+  device: {
     operator: FilterOperator.OR,
     constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }],
   },
@@ -79,8 +83,36 @@ const fetchDataByRange = () => {
     `http://localhost:8080/logging/range?start=${startDate.value.toISOString()}&end=${endDate.value.toISOString()}`
   )
     .then((res) => res.json())
-    .then((json) => (logData.value = json))
+    .then((json) => {
+      console.log(json);
+      if (json.length > 0) {
+        logData.value = json;
+      } else {
+        isModalResultActive.value = true;
+      }
+    })
     .catch((err) => (error.value = err));
+};
+
+const deleteData = async () => {
+  logData.value.forEach((el) => {
+    const delData = {
+      id: el.id,
+    };
+    fetch("http://localhost:8080/logging/delete", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(delData),
+    })
+      .then(() => {
+        console.log(`ID ${el.id} Deleted successfully ✅  ${typeof el.id} `);
+        const index = logData.value.findIndex((key) => key.id === el.id);
+        logData.value.splice(index, 1);
+      })
+      .catch((err) => (error.value = err));
+  });
 };
 
 const actionColor = (action) => {
@@ -96,8 +128,29 @@ const actionColor = (action) => {
 </script>
 
 <template>
+  <CardBoxModal
+    v-model="isModalResultActive"
+    title="Fetch request is done"
+    button="info"
+    button-label="Understand"
+  >
+    <p>Records within range is not available.</p>
+  </CardBoxModal>
+
+  <CardBoxModal
+    v-model="isModalDeleteActive"
+    title="Please confirm."
+    button="success"
+    button-label="Confirm"
+    has-cancel
+    @confirm="deleteData()"
+  >
+    <p>Are you sure that you want to <b>delete</b> the selected records?</p>
+    <p>If yes, please continue.</p>
+  </CardBoxModal>
+
   <CardBox>
-    <div class="grid grid-cols-4 lg:grid-cols-4 gap-6 mb-2">
+    <div class="grid grid-cols-5 lg:grid-cols-5 gap-6 mb-2">
       <div class="flex flex-col justify-between">
         <h2>Start date:</h2>
         <Datepicker v-model="startDate"></Datepicker>
@@ -114,6 +167,16 @@ const actionColor = (action) => {
           color="info"
           label="Fetch data"
           @click="fetchDataByRange()"
+        ></BaseButton>
+      </div>
+      <div class="flex flex-col justify-between">
+        <h2></h2>
+        <BaseButton
+          class="w-1/2 mx-auto"
+          :icon="mdiDelete"
+          color="danger"
+          label="Delete"
+          @click="isModalDeleteActive = true"
         ></BaseButton>
       </div>
       <div class="flex flex-col justify-between align-items-center">
@@ -138,11 +201,10 @@ const actionColor = (action) => {
         'stockCode',
         'action',
         'machine',
+        'device',
         'shift',
         'category',
-        'group',
         'uom',
-        'class',
         'created_at',
       ]"
     >
@@ -156,14 +218,13 @@ const actionColor = (action) => {
         </template>
       </Column>
       <Column field="stockCode" header="Stock Code" :sortable="true"></Column>
+      <Column field="totalQty" header="Total qty" :sortable="true"></Column>
+      <Column field="uom" header="UOM" :sortable="true"></Column>
       <Column field="stockName" header="Stock Name" :sortable="true"></Column>
       <Column field="machine" header="Machine" :sortable="true"></Column>
       <Column field="shift" header="Shift" :sortable="true"></Column>
-      <Column field="totalQty" header="Total qty" :sortable="true"></Column>
       <Column field="category" header="Category" :sortable="true"></Column>
-      <Column field="stockGroup" header="Group" :sortable="true"></Column>
-      <Column field="class" header="Class" :sortable="true"></Column>
-      <Column field="uom" header="UOM" :sortable="true"></Column>
+      <Column field="device" header="Device" :sortable="true"></Column>
       <Column field="weight" header="Weight" :sortable="true"></Column>
       <Column field="created_at" header="Created At" :sortable="true">
         <template #body="{ data }">
@@ -171,7 +232,7 @@ const actionColor = (action) => {
             class="text-gray-500 dark:text-slate-400"
             :title="moment(new Date(data.created_at)).format('LLLL')"
             >{{
-              moment(new Date(data.created_at)).format("MM/DD/YYYY, h:mm a")
+              moment(new Date(data.created_at)).format("MM/DD/YYYY, HH:mm")
             }}</small
           >
         </template>

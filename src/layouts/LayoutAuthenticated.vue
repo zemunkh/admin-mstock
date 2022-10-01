@@ -2,13 +2,13 @@
 // import { mdiForwardburger, mdiBackburger, mdiMenu } from "@mdi/js";
 import { useRouter } from "vue-router";
 // import menuAside from "@/menuAside.js";
-import menuNavBar from "@/menuNavBar.js";
+// import menuNavBar from "@/menuNavBar.js";
 import { useMainStore } from "@/stores/main.js";
 import { useLayoutStore } from "@/stores/layout.js";
-import { useStyleStore } from "@/stores/style.js";
-import BaseIcon from "@/components/BaseIcon.vue";
-import NavBar from "@/components/NavBar.vue";
-import NavBarItemPlain from "@/components/NavBarItemPlain.vue";
+// import { useStyleStore } from "@/stores/style.js";
+// import BaseIcon from "@/components/BaseIcon.vue";
+// import NavBar from "@/components/NavBar.vue";
+// import NavBarItemPlain from "@/components/NavBarItemPlain.vue";
 // import AsideMenu from "@/components/AsideMenu.vue";
 
 useMainStore().setUser({
@@ -20,7 +20,7 @@ useMainStore().setUser({
 
 // const layoutAsidePadding = "xl:pl-60";
 
-const styleStore = useStyleStore();
+// const styleStore = useStyleStore();
 
 const layoutStore = useLayoutStore();
 
@@ -30,55 +30,13 @@ router.beforeEach(() => {
   layoutStore.isAsideMobileExpanded = false;
   layoutStore.isAsideLgActive = false;
 });
-
-const menuClick = (event, item) => {
-  if (item.isToggleLightDark) {
-    styleStore.setDarkMode();
-  }
-
-  if (item.isLogout) {
-    //
-  }
-};
 </script>
 
 <template>
-  <div
-    :class="{
-      'overflow-hidden lg:overflow-visible': layoutStore.isAsideMobileExpanded,
-    }"
-  >
+  <div class="overflow-hidden lg:overflow-visible">
     <div
       class="pt-1 min-h-screen w-screen transition-position lg:w-auto bg-gray-50"
     >
-      <NavBar
-        :menu="menuNavBar"
-        :class="[
-          layoutAsidePadding,
-          { 'ml-60 lg:ml-0': layoutStore.isAsideMobileExpanded },
-        ]"
-        @menu-click="menuClick"
-      >
-        <NavBarItemPlain
-          display="flex lg:hidden"
-          @click.prevent="layoutStore.asideMobileToggle()"
-        >
-          <BaseIcon
-            :path="
-              layoutStore.isAsideMobileExpanded
-                ? mdiBackburger
-                : mdiForwardburger
-            "
-            size="24"
-          />
-        </NavBarItemPlain>
-        <NavBarItemPlain
-          display="hidden lg:flex xl:hidden"
-          @click.prevent="layoutStore.isAsideLgActive = true"
-        >
-          <BaseIcon :path="mdiMenu" size="24" />
-        </NavBarItemPlain>
-      </NavBar>
       <!-- <AsideMenu :menu="menuAside" @menu-click="menuClick" /> -->
       <slot />
     </div>

@@ -6,10 +6,10 @@ var bodyParser = require("body-parser");
 var cron = require("node-cron");
 
 var task = cron.schedule(
-  "* */24 * * *",
+  "*/30 * * * *",
   () => {
     var now = new Date();
-    // console.log("Started at: ", now.toISOString());
+    console.log("Started at: ", now.toISOString());
 
     counterDb.selectAllZeroQty((err, rows) => {
       if (err) return [];
@@ -18,7 +18,7 @@ var task = cron.schedule(
         var diff = new Date(now.getTime() - logDate.getTime());
         var diffHours = diff.getHours();
         // console.log(`Diff hours: ${diffHours}`);
-        if (diffHours >= 24) {
+        if (diffHours >= 1) {
           console.log(
             `Stock Name: ${el.stockCode} : ${el.totalQty} : ${el.created_at}`
           );
@@ -71,6 +71,7 @@ router.post("/counter/create", (req, res) => {
       req.body.stockCode,
       req.body.stockName,
       req.body.machine,
+      req.body.device,
       req.body.shift,
       req.body.category,
       req.body.stockGroup,
@@ -84,7 +85,7 @@ router.post("/counter/create", (req, res) => {
       req.body.updated_at,
       req.body.created_at,
     ],
-    (err) => {
+    (id, err) => {
       if (err)
         return res.status(500).send("Problem ocurred during creating Counter");
       counterDb.selectById(id, (err, rows) => {
@@ -100,6 +101,7 @@ router.post("/counter/create", (req, res) => {
             rows.stockName,
             rows.stockCode,
             rows.machine,
+            rows.device,
             rows.shift,
             rows.category,
             rows.stockGroup,
@@ -140,7 +142,7 @@ router.get("/counter/stock/machine", (req, res) => {
     (err, rows) => {
       if (err)
         return res.status(500).send("Problem occurred during getting counters");
-      console.log("res: 👉 ", rows);
+      // console.log("res: 👉 ", rows);
       res.status(200).send(rows);
     }
   );
@@ -169,6 +171,7 @@ router.delete("/counter/delete", async (req, res) => {
         rows.stockName,
         rows.stockCode,
         rows.machine,
+        rows.device,
         rows.shift,
         rows.category,
         rows.stockGroup,
@@ -214,11 +217,12 @@ router.post("/counter/updateQty", async (req, res) => {
         res.status(200).send(rows);
         loggingDb.insert(
           [
-            `update ${req.body.from}`,
+            `${req.body.from}`,
             rows.stockId,
             rows.stockName,
             rows.stockCode,
             rows.machine,
+            rows.device,
             rows.shift,
             rows.category,
             rows.stockGroup,
@@ -236,50 +240,6 @@ router.post("/counter/updateQty", async (req, res) => {
                 .status(500)
                 .send("Problem ocurred during creating Counter");
             // console.log('✅ Saved =', id)
-          }
-        );
-      });
-    }
-  );
-});
-
-router.post("/counter/updateWeight", async (req, res) => {
-  const updatedTime = new Date();
-  counterDb.updateWeight(
-    [req.body.weight, updatedTime.toISOString(), req.body.id],
-    (err) => {
-      if (err)
-        return res.status(500).send("Problem occurred during updating counter");
-      counterDb.selectById(parseInt(req.body.id), (err, rows) => {
-        if (err)
-          return res
-            .status(500)
-            .send("Problem occurred during getting counters");
-        res.status(200).send(rows);
-        loggingDb.insert(
-          [
-            "update weight",
-            rows.stockId,
-            rows.stockName,
-            rows.stockCode,
-            rows.machine,
-            rows.shift,
-            rows.category,
-            rows.stockGroup,
-            rows.class,
-            rows.weight,
-            rows.totalQty,
-            rows.purchasePrice,
-            rows.uom,
-            rows.shiftDate,
-            updatedTime.toISOString(),
-          ],
-          (id, err) => {
-            if (err)
-              return res
-                .status(500)
-                .send("Problem ocurred during creating Counter");
-            console.log("✅ Saved =", id);
           }
         );
       });
@@ -311,11 +271,12 @@ router.post("/logging/create", (req, res) => {
   }
   loggingDb.insert(
     [
-      'new Loose Stock In',
+      'new Loose In',
       req.body.stockId,
       req.body.stockName,
       req.body.stockCode,
       req.body.machine,
+      req.body.device,
       req.body.shift,
       req.body.category,
       req.body.stockGroup,

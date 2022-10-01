@@ -15,6 +15,7 @@ class Db {
         stockCode TEXT,
         stockName TEXT,
         machine TEXT,
+        device TEXT,
         shift TEXT,
         category TEXT,
         stockGroup TEXT,
@@ -33,7 +34,7 @@ class Db {
   insert(counter, callback) {
     // console.log('Counter insert: 👉 ', counter)
     return this.db.run(
-      'INSERT INTO counter (stockId,stockCode,stockName,machine,shift,category,stockGroup,class,weight,qty,totalQty,purchasePrice,uom,shiftDate,updated_at,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      'INSERT INTO counter (stockId,stockCode,stockName,machine,device,shift,category,stockGroup,class,weight,qty,totalQty,purchasePrice,uom,shiftDate,updated_at,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
       counter, function (err) {
         return callback(this.lastID, err)
       })

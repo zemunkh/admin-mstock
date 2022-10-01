@@ -16,6 +16,7 @@ class DbLog {
         stockName TEXT,
         stockCode TEXT,
         machine TEXT,
+        device TEXT,
         shift TEXT,
         category TEXT,
         stockGroup TEXT,
@@ -32,7 +33,7 @@ class DbLog {
   insert(logging, callback) {
     // console.log('Logging insert: 👉 ', logging)
     return this.db.run(
-      'INSERT INTO logging (action,stockId,stockName,stockCode,machine,shift,category,stockGroup,class,weight,totalQty,purchasePrice,uom,shiftDate,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      'INSERT INTO logging (action,stockId,stockName,stockCode,machine,device,shift,category,stockGroup,class,weight,totalQty,purchasePrice,uom,shiftDate,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
       logging, function (err) {
         callback(err)
       })
