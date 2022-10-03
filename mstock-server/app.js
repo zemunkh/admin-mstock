@@ -6,7 +6,7 @@ var bodyParser = require("body-parser");
 var cron = require("node-cron");
 
 var task = cron.schedule(
-  "*/30 * * * *",
+  "0 9 * * *",
   () => {
     var now = new Date();
     console.log("Started at: ", now.toISOString());
@@ -18,7 +18,7 @@ var task = cron.schedule(
         var diff = new Date(now.getTime() - logDate.getTime());
         var diffHours = diff.getHours();
         // console.log(`Diff hours: ${diffHours}`);
-        if (diffHours >= 1) {
+        if (diffHours >= 24) {
           console.log(
             `Stock Name: ${el.stockCode} : ${el.totalQty} : ${el.created_at}`
           );
@@ -107,6 +107,7 @@ router.post("/counter/create", (req, res) => {
             rows.stockGroup,
             rows.class,
             rows.weight,
+            rows.qty,
             rows.totalQty,
             rows.purchasePrice,
             rows.uom,
@@ -177,6 +178,7 @@ router.delete("/counter/delete", async (req, res) => {
         rows.stockGroup,
         rows.class,
         rows.weight,
+        rows.qty,
         rows.totalQty,
         rows.purchasePrice,
         rows.uom,
@@ -228,6 +230,7 @@ router.post("/counter/updateQty", async (req, res) => {
             rows.stockGroup,
             rows.class,
             rows.weight,
+            rows.qty,
             rows.totalQty,
             rows.purchasePrice,
             rows.uom,
@@ -282,6 +285,7 @@ router.post("/logging/create", (req, res) => {
       req.body.stockGroup,
       req.body.class,
       req.body.weight,
+      req.body.qty,
       req.body.totalQty,
       req.body.purchasePrice,
       req.body.uom,
@@ -333,6 +337,11 @@ router.delete("/logging/delete", async (req, res) => {
       return res.status(500).send("Problem occurred during deleting counter");
     res.status(200).send({ id: req.body.id });
   });
+});
+
+app.get("/check", (req, res) => {
+  console.log('Code: ', req.query.code);
+  res.status(200).send({ code: req.query.code });
 });
 
 app.use("/", router);

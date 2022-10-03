@@ -123,7 +123,7 @@ class Db {
   deleteById(id, callback) {
     return this.db.run(
       'DELETE FROM counter WHERE id = ?',
-      [id], function(err) {
+      [id], (err) => {
         callback(err)
       })
   }

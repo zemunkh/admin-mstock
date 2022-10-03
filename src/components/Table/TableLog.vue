@@ -218,11 +218,12 @@ const actionColor = (action) => {
         </template>
       </Column>
       <Column field="stockCode" header="Stock Code" :sortable="true"></Column>
-      <Column field="totalQty" header="Total qty" :sortable="true"></Column>
+      <Column field="qty" header="Quantity" :sortable="true"></Column>
       <Column field="uom" header="UOM" :sortable="true"></Column>
       <Column field="stockName" header="Stock Name" :sortable="true"></Column>
       <Column field="machine" header="Machine" :sortable="true"></Column>
       <Column field="shift" header="Shift" :sortable="true"></Column>
+      <Column field="totalQty" header="Total qty" :sortable="true"></Column>
       <Column field="category" header="Category" :sortable="true"></Column>
       <Column field="device" header="Device" :sortable="true"></Column>
       <Column field="weight" header="Weight" :sortable="true"></Column>
