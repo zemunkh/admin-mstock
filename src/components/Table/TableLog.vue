@@ -74,7 +74,16 @@ onMounted(async () => {
   await fetch(`http://localhost:8080/logging/range?
     start=${startDate.value.toISOString()}&end=${endDate.value.toISOString()}`)
     .then((res) => res.json())
-    .then((json) => (logData.value = json))
+    .then((json) => {
+      if (json.length > 0) {
+        json.forEach((el) => {
+          el.created_at = new Date(el.created_at);
+        });
+        logData.value = json;
+      } else {
+        isModalResultActive.value = true;
+      }
+    })
     .catch((err) => (error.value = err));
 });
 
@@ -84,8 +93,10 @@ const fetchDataByRange = () => {
   )
     .then((res) => res.json())
     .then((json) => {
-      console.log(json);
       if (json.length > 0) {
+        json.forEach((el) => {
+          el.created_at = new Date(el.created_at);
+        });
         logData.value = json;
       } else {
         isModalResultActive.value = true;

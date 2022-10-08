@@ -18,7 +18,7 @@ var task = cron.schedule(
         var diff = new Date(now.getTime() - logDate.getTime());
         var diffHours = diff.getHours();
         // console.log(`Diff hours: ${diffHours}`);
-        if (diffHours >= 24) {
+        if (diffHours >= 24 && el.qty <= 0) {
           console.log(
             `Stock Name: ${el.stockCode} : ${el.totalQty} : ${el.created_at}`
           );
@@ -190,7 +190,7 @@ router.delete("/counter/delete", async (req, res) => {
           return res
             .status(500)
             .send("Problem ocurred during fetching Counter");
-        console.log("✅ Saved =", id);
+        // console.log("✅ Saved =", id);
         counterDb.deleteById([req.body.id], (err) => {
           if (err)
             return res

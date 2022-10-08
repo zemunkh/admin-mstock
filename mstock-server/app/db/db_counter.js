@@ -70,7 +70,7 @@ class Db {
 
   selectByCodeAndDate(stockCode, callback) {
     return this.db.get(
-    `SELECT * FROM counter WHERE qty > 0 AND stockCode = ? ORDER BY updated_at ASC Limit 1`,
+    `SELECT * FROM counter WHERE qty > 0 AND stockCode = ? ORDER BY created_at ASC Limit 1`,
     [stockCode],function(err,row){
       callback(err,row)
     })
@@ -86,7 +86,7 @@ class Db {
 
   selectByCodeAndMachine(params, callback) { // [stockCode, machine]
     return this.db.get(
-    `SELECT * FROM counter WHERE stockCode = ? AND machine = ? ORDER BY updated_at ASC`,
+    `SELECT * FROM counter WHERE stockCode = ? AND machine = ? ORDER BY updated_at DESC`,
     params,function(err,row){
       callback(err,row)
     })
