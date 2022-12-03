@@ -1,9 +1,9 @@
 "use strict";
 const sqlite3 = require('sqlite3').verbose();
-// Counter Weight, StockGroup, StockCategory, StockClass, basedUOM, Qty produced
+// Counter - Production counting card database
 class Db {
-  constructor(file) {
-      this.db = new sqlite3.Database(file);
+  constructor() {
+      this.db = new sqlite3.Database('counterSqlite.sqlite');
       this.createTable()
   }                
   // created_at TEXT DEFAULT CURRENT_TIMESTAMP
@@ -34,7 +34,24 @@ class Db {
   insert(counter, callback) {
     // console.log('Counter insert: 👉 ', counter)
     return this.db.run(
-      'INSERT INTO counter (stockId,stockCode,stockName,machine,device,shift,category,stockGroup,class,weight,qty,totalQty,purchasePrice,uom,shiftDate,updated_at,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      `INSERT INTO counter (
+        stockId,
+        stockCode,
+        stockName,
+        machine,
+        device,
+        shift,
+        category,
+        stockGroup,
+        class,
+        weight,
+        qty,
+        totalQty,
+        purchasePrice,
+        uom,
+        shiftDate,
+        updated_at,
+        created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       counter, function (err) {
         return callback(this.lastID, err)
       })
@@ -95,7 +112,7 @@ class Db {
   updateId(counter, callback) {
     // console.log('Counter update: 👉 ', counter)
     return this.db.run(
-      'UPDATE counter SET stockId = ?, stockCode = ?, stockName = ?, machine = ?, shift = ?, category = ?, stockGroup = ?, class = ?, weight = ?, qty = ?, totalQty = ?, purchasePrice = ?, baseUOM = ?,  WHERE id = ?',
+      'UPDATE counter SET stockId = ?, stockCode = ?, stockName = ?, machine = ?, shift = ?, category = ?, stockGroup = ?, class = ?, weight = ?, qty = ?, totalQty = ?, purchasePrice = ?, uom = ?,  WHERE id = ?',
       [counter.id], (err) => {
         callback(err)
       })
@@ -106,15 +123,6 @@ class Db {
     return this.db.run(
       // 'UPDATE counter SET qty = ?, totalQty = ?, updated_at = ? WHERE id = ?',
       'UPDATE counter SET qty = ?, totalQty = ?, updated_at = ? WHERE id = ?',
-      counter, (err) => {
-        callback(err)
-      })
-  }
-
-  updateWeight(counter, callback) {
-    // console.log('Counter by id: 👉 ', counter)
-    return this.db.run(
-      'UPDATE counter SET weight = ?, updated_at = ? WHERE id = ?',
       counter, (err) => {
         callback(err)
       })
