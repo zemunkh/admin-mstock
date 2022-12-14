@@ -8,9 +8,9 @@ pnpm-debug.log*
 lerna-debug.log*
 
 mstock-server/node_modules
-mstock-server/counterSqlite.db
-mstock-server/loggingSqlite.db
-
+mstock-server/counterSqlite.sqlite
+mstock-server/stockCounterSqlite.sqlite
+mstock-server/loggingSqlite.sqlite
 
 node_modules
 .DS_Store

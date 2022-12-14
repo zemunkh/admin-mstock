@@ -15,6 +15,7 @@ router.post('/create', (req, res) => {
   if (Object.keys(req.body).length === 0) {
     return res.status(500).send("Null values received. Can't proceed.");
   }
+  console.log('✅ Shift date ', req.body.shiftDate)
   counterDb.insert(
     [
       req.body.stockId,
@@ -196,21 +197,24 @@ router.post('/drop', async (req, res) => {
       if (err)
         return res.status(500).send('Problem occurred during updating counter');
       // Delete existing log
-      counterDb.selectById(parseInt(req.body.id), (err, rows) => {
+      counterDb.selectById(parseInt(req.body.id), (err, row) => {
         if (err)
           return res
             .status(500)
             .send('Problem occurred during getting counters');
-          loggingDb.selectByCounterId([req.body.id], (err, rows) => {
-            if (err)
-              return res.status(500).send('Problem occurred during getting log data');
+        res.status(200).send(row);
+          // loggingDb.selectByCounterId([req.body.id], (err, logRows) => {
+          //   if (err)
+          //     return res.status(500).send('Problem occurred during getting log data');
+              
+          //     // console.log('✅ Logs: ', logRows)
             
-              loggingDb.deleteById([rows[0].id], (err) => {
-                if (err)
-                  return res.status(500).send('Problem occurred during deleting counter');
-                res.status(200).send({ id: rows[0].id });
-              });
-          });
+          //     loggingDb.deleteById(logRows[0].id, (err) => {
+          //       if (err)
+          //         return res.status(500).send('Problem occurred during deleting counter');
+          //       res.status(200).send({ id: logRows[0].id });
+          //     });
+          // });
       });
     }
   );

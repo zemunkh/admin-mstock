@@ -23,7 +23,7 @@ router.post('/create', (req, res) => {
   if (Object.keys(req.body).length === 0) {
     return res.status(500).send("Null values received. Can't proceed.");
   }
-
+  console.log('🎯 Body: ', req.body)
   stockCounterDb.insert(
     [
       req.body.stock,
@@ -44,7 +44,11 @@ router.post('/create', (req, res) => {
     stockCounterDb.selectById(id, (err, row) => {
       if (err)
         return res.status(500).send('Problem occurred during getting counters')
+
+      console.log('Created data: 👉 ', row);
+      
       res.status(200).send(row);
+
       var now = new Date();
       console.log('Production created: ', now.toISOString());
       loggingDb.updateStockIn(
@@ -58,7 +62,7 @@ router.post('/create', (req, res) => {
   })
 });
 
-router.get('/', (req, res) => {
+router.get('/status', (req, res) => {
   if(req.query.posted = '1') {
     stockCounterDb.selectByPosted((err, rows) => {
       if (err)
@@ -74,6 +78,18 @@ router.get('/', (req, res) => {
   } else {
     res.status(500).send('Query is not available.');
   }
+});
+
+router.get('/read', (req, res) => {
+  stockCounterDb.selectById(
+    [req.query.id],
+    (err, row) => {
+      if (err)
+        return res.status(500).send('Problem occurred during getting counter');
+      // console.log('res: 👉 ', rows);
+      res.status(200).send(row);
+    }
+  );
 });
 
 router.get('/machine', (req, res) => {

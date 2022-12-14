@@ -7,6 +7,10 @@ const productionRoutes = require('./routes/counter');
 const stockCounterRoutes = require('./routes/stockCounter');
 const loggingRoutes = require('./routes/logging');
 
+var ip = require('ip');
+
+console.log(ip.address());
+
 var task = cron.schedule(
   '0 9 * * *',
   () => {
@@ -73,4 +77,5 @@ let port = process.env.PORT || 8080;
 var server = app.listen(port, () => {
   var port = server.address().port;
   console.log('App listening at http://localhost:%s', port);
+  
 });
