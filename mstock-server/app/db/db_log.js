@@ -67,7 +67,25 @@ class DbLog {
     })
   }
 
+  updateCounter(logging, callback) {
+    // console.log('Log by id: 👉 ', logging)
+    return this.db.run(
+      'UPDATE logging SET prodQty = ?, productionDate = ? WHERE counterId = ?',
+      logging, (err) => {
+        callback(err)
+      })
+  }
+
   updateStockIn(logging, callback) {
+    // console.log('Log by id: 👉 ', logging)
+    return this.db.run(
+      'UPDATE logging SET stockInQty = ?, stockInDate = ? WHERE counterId = ?',
+      logging, (err) => {
+        callback(err)
+      })
+  }
+
+  updatePostedStatus(logging, callback) {
     // console.log('Log by id: 👉 ', logging)
     return this.db.run(
       'UPDATE logging SET stockInQty = ?, stockInDate = ? WHERE counterId = ?',

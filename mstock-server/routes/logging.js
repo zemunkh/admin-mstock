@@ -73,6 +73,7 @@ router.get('/range', (req, res) => {
     if (err)
       return res.status(500).send('Problem occurred during getting log data');
     res.status(200).send(rows);
+    // console.log('Result: ', rows);
   });
 });
 

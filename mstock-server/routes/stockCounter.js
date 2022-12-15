@@ -23,7 +23,6 @@ router.post('/create', (req, res) => {
   if (Object.keys(req.body).length === 0) {
     return res.status(500).send("Null values received. Can't proceed.");
   }
-  console.log('🎯 Body: ', req.body)
   stockCounterDb.insert(
     [
       req.body.stock,
@@ -44,36 +43,39 @@ router.post('/create', (req, res) => {
     stockCounterDb.selectById(id, (err, row) => {
       if (err)
         return res.status(500).send('Problem occurred during getting counters')
-
-      console.log('Created data: 👉 ', row);
       
       res.status(200).send(row);
-
+      // console.log('🎯 ROW: ', row)
       var now = new Date();
       console.log('Production created: ', now.toISOString());
       loggingDb.updateStockIn(
         [
-          row.counterId,
           1,
-          now.toISOString()
-        ]
+          now.toISOString(),
+          row.id
+        ],
+        (err) => {
+          if (err)
+            return res.status(500).send('Problem occurred during updating logs')
+        }
       )
     })
   })
 });
 
 router.get('/status', (req, res) => {
-  if(req.query.posted = '1') {
+  if(req.query.posted == 1) {
     stockCounterDb.selectByPosted((err, rows) => {
       if (err)
         return res.status(500).send('Problem occurred during getting counters');
       res.status(200).send(rows);
     })
-  } else if (req.query.posted = '0') {
+  } else if (req.query.posted == 0) {
     stockCounterDb.selectByNotPosted((err, rows) => {
       if (err)
         return res.status(500).send('Problem occurred during getting counters');
       res.status(200).send(rows);
+      // console.log('🎯 Query result: ', rows)
     })
   } else {
     res.status(500).send('Query is not available.');
@@ -133,21 +135,26 @@ router.post('/update', (req, res) => {
       req.body.updated_at,
       req.body.created_at,
       req.body.id,
-    ], (id, err) => {
+    ], (err) => {
     if(err) 
       return res.status(500).send('Problem ocurred during creating stockCounter.')
-    stockCounterDb.selectById(id, (err, row) => {
+    stockCounterDb.selectById(parseInt(req.body.id), (err, row) => {
       if (err)
         return res.status(500).send('Problem occurred during getting counters')
+      console.log('Result: 👉', row);
       res.status(200).send(row);
       var now = new Date();
-      console.log('Production created: ', now.toISOString());
+      console.log('Update StockIn section: ', now.toISOString());
       loggingDb.updateStockIn(
         [
-          row.counterId,
-          1,
-          now.toISOString()
-        ]
+          row.qty,
+          now.toISOString(),
+          row.id
+        ],
+        (err) => {
+          if (err)
+            return res.status(500).send('Problem occurred during updating logs')
+        }
       )
     })
   })
@@ -172,13 +179,6 @@ router.post('/updateStatus', (req, res) => {
         return res.status(500).send('Problem occurred during getting counters')
       res.status(200).send({ id: req.body._id });
 
-      loggingDb.updateStockIn(
-        [
-          row.counterId,
-          1,
-          now.toISOString(),
-        ]
-      )
     })
   })
 });

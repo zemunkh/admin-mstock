@@ -5,7 +5,7 @@ import { onMounted, ref } from "vue";
 // import { useMainStore } from "@/stores/main";
 import { mdiArrowBottomLeft, mdiDelete } from "@mdi/js";
 // import TableCheckboxCell from "@/components/TableCheckboxCell.vue";
-import PillTag from "@/components/PillTag.vue";
+// import PillTag from "@/components/PillTag.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import FormControl from "@/components/FormControl.vue";
 import FormField from "@/components/FormField.vue";
@@ -31,11 +31,15 @@ const isModalResultActive = ref(false);
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  stockName: {
+  stockCode: {
     operator: FilterOperator.AND,
     constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }],
   },
-  created_at: {
+  productionDate: {
+    operator: FilterOperator.AND,
+    constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }],
+  },
+  stockInDate: {
     operator: FilterOperator.AND,
     constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }],
   },
@@ -60,10 +64,6 @@ const filters = ref({
     constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }],
   },
   class: {
-    operator: FilterOperator.OR,
-    constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }],
-  },
-  action: {
     operator: FilterOperator.OR,
     constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }],
   },
@@ -126,16 +126,16 @@ const deleteData = async () => {
   });
 };
 
-const actionColor = (action) => {
-  if (action.includes("new")) {
-    return "success";
-  } else if (action.includes("update")) {
-    return "warning";
-  } else if (action.includes("delete")) {
-    return "danger";
-  }
-  return "info";
-};
+// const actionColor = (action) => {
+//   if (action.includes("new")) {
+//     return "success";
+//   } else if (action.includes("update")) {
+//     return "warning";
+//   } else if (action.includes("delete")) {
+//     return "danger";
+//   }
+//   return "info";
+// };
 </script>
 
 <template>
@@ -208,47 +208,55 @@ const actionColor = (action) => {
       :value="logData"
       responsive-layout="scroll"
       :global-filter-fields="[
-        'stockName',
         'stockCode',
-        'action',
-        'machine',
         'device',
-        'shift',
-        'category',
+        'productionDate',
+        'prodQty',
+        'stockInDate',
+        'stockInQty',
         'uom',
-        'created_at',
+        'totalQty',
+        'category',
+        'weight',
+        'shift',
+        'machine',
       ]"
     >
-      <Column field="action" header="Action" :sortable="true">
-        <template #body="{ data }">
-          <PillTag
-            :color="actionColor(data.action)"
-            :label="data.action"
-            small
-          />
-        </template>
-      </Column>
       <Column field="stockCode" header="Stock Code" :sortable="true"></Column>
-      <Column field="qty" header="Quantity" :sortable="true"></Column>
-      <Column field="uom" header="UOM" :sortable="true"></Column>
-      <Column field="stockName" header="Stock Name" :sortable="true"></Column>
-      <Column field="machine" header="Machine" :sortable="true"></Column>
-      <Column field="shift" header="Shift" :sortable="true"></Column>
-      <Column field="totalQty" header="Total qty" :sortable="true"></Column>
-      <Column field="category" header="Category" :sortable="true"></Column>
       <Column field="device" header="Device" :sortable="true"></Column>
-      <Column field="weight" header="Weight" :sortable="true"></Column>
-      <Column field="created_at" header="Created At" :sortable="true">
+      <Column field="productionDate" header="P.time" :sortable="true">
         <template #body="{ data }">
           <small
             class="text-gray-500 dark:text-slate-400"
-            :title="moment(new Date(data.created_at)).format('LLLL')"
+            :title="moment(new Date(data.productionDate)).format('LLLL')"
             >{{
-              moment(new Date(data.created_at)).format("MM/DD/YYYY, HH:mm")
+              moment(new Date(data.productionDate)).format("MM/DD/YYYY, HH:mm")
             }}</small
           >
         </template>
       </Column>
+      <Column field="prodQty" header="Production" :sortable="true"></Column>
+      <Column field="stockInDate" header="SI.time" :sortable="true">
+        <template #body="{ data }">
+          <small
+            v-if="data.stockInDate != null"
+            class="text-gray-500 dark:text-slate-400"
+            :title="moment(new Date(data.stockInDate)).format('LLLL')"
+            >{{
+              data.stockInDate != ""
+                ? moment(new Date(data.stockInDate)).format("MM/DD/YYYY, HH:mm")
+                : "No data"
+            }}</small
+          >
+        </template>
+      </Column>
+      <Column field="stockInQty" header="Stock In" :sortable="true"></Column>
+      <Column field="uom" header="UOM" :sortable="true"></Column>
+      <Column field="totalQty" header="Total qty" :sortable="true"></Column>
+      <Column field="category" header="Category" :sortable="true"></Column>
+      <Column field="weight" header="Weight" :sortable="true"></Column>
+      <Column field="shift" header="Shift" :sortable="true"></Column>
+      <Column field="machine" header="Machine" :sortable="true"></Column>
     </DataTable>
   </CardBox>
 </template>

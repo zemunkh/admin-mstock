@@ -143,36 +143,20 @@ router.post('/add', async (req, res) => {
     (err) => {
       if (err)
         return res.status(500).send('Problem occurred during updating counter');
-      counterDb.selectById(parseInt(req.body.id), (err, rows) => {
+      counterDb.selectById(parseInt(req.body.id), (err, row) => {
         if (err)
           return res
             .status(500)
             .send('Problem occurred during getting counters');
 
-        // Insert new log
+        // Update the log
         var now = new Date();
-        console.log('New Production created: ', now.toISOString());
-        loggingDb.insert(
+        console.log('Production Qty updated: ', now.toISOString());
+        loggingDb.updateCounter(
           [
-            req.body.id,
-            rows.stockCode,
-            rows.stockName,
-            rows.device,
+            row.qty,
             now.toISOString(),
-            1,
-            '',
-            0,
-            rows.uom,
-            (rows.totalQty / rows.qty),
-            rows.category,
-            rows.stockGroup,
-            rows.class,
-            rows.weight,
-            rows.shift,
-            rows.machine,
-            rows.purchasePrice,
-            rows.shiftDate,
-            rows.created_at,
+            row.id
           ],
           (err) => {
             if (err)
@@ -182,7 +166,8 @@ router.post('/add', async (req, res) => {
             // console.log('✅ Saved stock: ', rows.stockCode)
           }
         );
-        res.status(200).send(rows);
+        res.status(200).send(row); 
+
       });
     }
   );
@@ -202,19 +187,25 @@ router.post('/drop', async (req, res) => {
           return res
             .status(500)
             .send('Problem occurred during getting counters');
-        res.status(200).send(row);
-          // loggingDb.selectByCounterId([req.body.id], (err, logRows) => {
-          //   if (err)
-          //     return res.status(500).send('Problem occurred during getting log data');
-              
-          //     // console.log('✅ Logs: ', logRows)
-            
-          //     loggingDb.deleteById(logRows[0].id, (err) => {
-          //       if (err)
-          //         return res.status(500).send('Problem occurred during deleting counter');
-          //       res.status(200).send({ id: logRows[0].id });
-          //     });
-          // });
+
+         // Update the log
+        var now = new Date();
+        console.log('Production Qty updated: ', now.toISOString());
+        loggingDb.updateCounter(
+          [
+            row.id,
+            row.qty,
+            now.toISOString(),
+          ],
+          (err) => {
+            if (err)
+              return res
+                .status(500)
+                .send('Problem ocurred during creating Logging data');
+            // console.log('✅ Saved stock: ', rows.stockCode)
+          }
+        );
+        res.status(200).send(row); 
       });
     }
   );
