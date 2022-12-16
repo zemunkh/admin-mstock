@@ -70,16 +70,16 @@ class DbLog {
   updateCounter(logging, callback) {
     // console.log('Log by id: 👉 ', logging)
     return this.db.run(
-      'UPDATE logging SET prodQty = ?, productionDate = ? WHERE counterId = ?',
+      'UPDATE logging SET prodQty = ?, productionDate = ? WHERE counterId = (SELECT counterId FROM logging WHERE counterId = ? AND stockInQty = 0 ORDER BY created_at ASC Limit 1)',
       logging, (err) => {
         callback(err)
       })
   }
 
   updateStockIn(logging, callback) {
-    // console.log('Log by id: 👉 ', logging)
+    console.log('Log by id: 👉 ', logging)
     return this.db.run(
-      'UPDATE logging SET stockInQty = ?, stockInDate = ? WHERE counterId = ?',
+      'UPDATE logging SET stockInQty = ?, stockInDate = ? WHERE counterId = (SELECT counterId FROM logging WHERE counterId = ? AND stockInQty = 0 ORDER BY created_at ASC Limit 1)',
       logging, (err) => {
         callback(err)
       })

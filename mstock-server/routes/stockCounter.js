@@ -25,6 +25,7 @@ router.post('/create', (req, res) => {
   }
   stockCounterDb.insert(
     [
+      req.body.counterId,
       req.body.stock,
       req.body.description,
       req.body.machine,
@@ -45,14 +46,14 @@ router.post('/create', (req, res) => {
         return res.status(500).send('Problem occurred during getting counters')
       
       res.status(200).send(row);
-      // console.log('🎯 ROW: ', row)
+      console.log('🎯 ROW: ', row)
       var now = new Date();
       console.log('Production created: ', now.toISOString());
       loggingDb.updateStockIn(
         [
           1,
           now.toISOString(),
-          row.id
+          row.counterId
         ],
         (err) => {
           if (err)
@@ -120,25 +121,15 @@ router.post('/update', (req, res) => {
     return res.status(500).send("Null values received. Can't proceed.");
   }
 
-  stockCounterDb.update(
+  stockCounterDb.updateQty(
     [
-      req.body.stock,
-      req.body.description,
-      req.body.machine,
-      req.body.shift,
-      req.body.device,
-      req.body.uom,
       req.body.qty,
-      req.body.purchasePrice,
-      req.body.isPosted,
-      req.body.shiftDate,
       req.body.updated_at,
-      req.body.created_at,
       req.body.id,
     ], (err) => {
     if(err) 
       return res.status(500).send('Problem ocurred during creating stockCounter.')
-    stockCounterDb.selectById(parseInt(req.body.id), (err, row) => {
+    stockCounterDb.selectById([parseInt(req.body.id)], (err, row) => {
       if (err)
         return res.status(500).send('Problem occurred during getting counters')
       console.log('Result: 👉', row);
@@ -147,13 +138,14 @@ router.post('/update', (req, res) => {
       console.log('Update StockIn section: ', now.toISOString());
       loggingDb.updateStockIn(
         [
-          row.qty,
+          1,
           now.toISOString(),
-          row.id
+          req.body.counterId
         ],
         (err) => {
           if (err)
-            return res.status(500).send('Problem occurred during updating logs')
+            console.log('Error: ', err);
+            // return res.status(500).send('Problem occurred during updating logs')
         }
       )
     })

@@ -152,11 +152,27 @@ router.post('/add', async (req, res) => {
         // Update the log
         var now = new Date();
         console.log('Production Qty updated: ', now.toISOString());
-        loggingDb.updateCounter(
+        loggingDb.insert(
           [
-            row.qty,
+            row.id,
+            row.stockCode,
+            row.stockName,
+            row.device,
             now.toISOString(),
-            row.id
+            1,
+            '',
+            0,
+            row.uom,
+            (req.body.totalQty / req.body.qty),
+            row.category,
+            row.stockGroup,
+            row.class,
+            row.weight,
+            row.shift,
+            row.machine,
+            row.purchasePrice,
+            row.shiftDate,
+            row.created_at,
           ],
           (err) => {
             if (err)
@@ -190,21 +206,31 @@ router.post('/drop', async (req, res) => {
 
          // Update the log
         var now = new Date();
-        console.log('Production Qty updated: ', now.toISOString());
-        loggingDb.updateCounter(
-          [
-            row.id,
-            row.qty,
-            now.toISOString(),
-          ],
-          (err) => {
-            if (err)
-              return res
-                .status(500)
-                .send('Problem ocurred during creating Logging data');
-            // console.log('✅ Saved stock: ', rows.stockCode)
-          }
-        );
+        console.log('Production Qty Empty: ', now.toISOString());
+        // loggingDb.updateCounter(
+        //   [
+        //     0,
+        //     now.toISOString(),
+        //     row.id,
+        //   ],
+        //   (err) => {
+        //     if (err)
+        //       return res
+        //         .status(500)
+        //         .send('Problem ocurred during creating Logging data');
+        //     // console.log('✅ Saved stock: ', rows.stockCode)
+        //   }
+        // );
+        // loggingDb.deleteById(
+        //   [row.id],
+        //   (err) => {
+        //     if (err)
+        //       return res
+        //         .status(500)
+        //         .send('Problem ocurred during creating Logging data');
+        //     // console.log('✅ Saved stock: ', rows.stockCode)
+        //   }
+        // );
         res.status(200).send(row); 
       });
     }

@@ -11,6 +11,7 @@ class Db {
     const sql = `
       CREATE TABLE IF NOT EXISTS stockCounter (
         id integer PRIMARY KEY,
+        counterId INTEGER,
         stock TEXT,
         description TEXT,
         machine TEXT,
@@ -29,7 +30,7 @@ class Db {
   insert(stockCounter, callback) {
     // console.log('Counter insert: 👉 ', stockCounter)
     return this.db.run(
-      'INSERT INTO stockCounter (stock,description,machine,shift,device,uom,qty,purchasePrice,isPosted,shiftDate,updated_at,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+      'INSERT INTO stockCounter (counterId,stock,description,machine,shift,device,uom,qty,purchasePrice,isPosted,shiftDate,updated_at,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
       stockCounter, function (err) {
         return callback(this.lastID, err)
       })
@@ -44,7 +45,7 @@ class Db {
   selectById(id, callback) {
     return this.db.get(
     `SELECT * FROM stockCounter WHERE id = ?`,
-    [id],function(err,row){
+    id,function(err,row){
       callback(err,row)
     })
   }    
@@ -96,7 +97,16 @@ class Db {
 
   update(stockCounter, callback) {
     return this.db.run(
-      'UPDATE stockCounter SET stock = ?, description = ?, machine = ?, shift = ?, device = ?, uom = ?, qty = ?, purchasePrice = ?, isPosted = ?, shiftDate = ?, updated_at = ?, created_at = ?  WHERE id = ?',
+      'UPDATE stockCounter SET counterId = ?, stock = ?, description = ?, machine = ?, shift = ?, device = ?, uom = ?, qty = ?, purchasePrice = ?, isPosted = ?, shiftDate = ?, updated_at = ?, created_at = ?  WHERE id = ?',
+      stockCounter, (err) => {
+        callback(err)
+      })
+  }
+
+  updateQty(stockCounter, callback) {
+    return this.db.run(
+      // 'UPDATE stockCounter SET qty = ?, qty = ?, updated_at = ? WHERE id = ?',
+      'UPDATE stockCounter SET qty = ?, updated_at = ? WHERE id = ?',
       stockCounter, (err) => {
         callback(err)
       })
