@@ -9,6 +9,29 @@ const loggingDb = new db_log('loggingSqlite.db');
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
+router.get('/updateOnce', (req, res) => {
+  var now = new Date();
+  loggingDb.updateStockIn(
+    [
+      0,
+      now.toISOString(),
+      3,
+    ], (err) => {
+    if(err) 
+      return res.status(500).send('Problem ocurred during creating stockCounter.')
+      loggingDb.selectZeroStockInByCounterId(1, (err, rows) => {
+        if (err)
+          console.log('Error: ', err);
+        if(rows.length > 0) {
+          res.status(200).send(rows);
+        } else {
+          res.status(404).send({'Status': 'Not found!'});
+        }
+      })
+  })
+});
+
+
 router.post('/create', (req, res) => {
   // console.log('Stock: 👉 ', req.body);
   if (Object.keys(req.body).length === 0) {

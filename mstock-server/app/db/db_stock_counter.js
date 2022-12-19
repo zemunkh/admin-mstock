@@ -45,10 +45,18 @@ class Db {
   selectById(id, callback) {
     return this.db.get(
     `SELECT * FROM stockCounter WHERE id = ?`,
-    id,function(err,row){
+    [id],function(err,row){
       callback(err,row)
     })
   }    
+
+  selectByCounterId(counterId, callback) {
+    return this.db.get(
+    `SELECT * FROM stockCounter WHERE counterId = ?`,
+    [counterId],function(err,row){
+      callback(err,row)
+    })
+  } 
 
   selectByCodeAndDate(stock, callback) {
     return this.db.all(
@@ -105,7 +113,6 @@ class Db {
 
   updateQty(stockCounter, callback) {
     return this.db.run(
-      // 'UPDATE stockCounter SET qty = ?, qty = ?, updated_at = ? WHERE id = ?',
       'UPDATE stockCounter SET qty = ?, updated_at = ? WHERE id = ?',
       stockCounter, (err) => {
         callback(err)
@@ -116,15 +123,6 @@ class Db {
     return this.db.run(
       // 'UPDATE stockCounter SET qty = ?, qty = ?, updated_at = ? WHERE id = ?',
       'UPDATE stockCounter SET isPosted = ?, updated_at = ? WHERE id = ?',
-      stockCounter, (err) => {
-        callback(err)
-      })
-  }
-
-  updateQty(stockCounter, callback) {
-    return this.db.run(
-      // 'UPDATE stockCounter SET qty = ?, qty = ?, updated_at = ? WHERE id = ?',
-      'UPDATE stockCounter SET qty = ?, updated_at = ? WHERE id = ?',
       stockCounter, (err) => {
         callback(err)
       })

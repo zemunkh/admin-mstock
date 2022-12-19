@@ -116,38 +116,45 @@ router.get('/all', (req, res) => {
   });
 });
 
-router.post('/update', (req, res) => {
+router.post('/update', async (req, res) => {
   if (Object.keys(req.body).length === 0) {
     return res.status(500).send("Null values received. Can't proceed.");
   }
-
+  console.log('ID: ✅ ', req.body.id);
   stockCounterDb.updateQty(
-    [
-      req.body.qty,
-      req.body.updated_at,
-      req.body.id,
-    ], (err) => {
+    [req.body.qty, req.body.updated_at, req.body.id], (err) => {
     if(err) 
       return res.status(500).send('Problem ocurred during creating stockCounter.')
-    stockCounterDb.selectById([parseInt(req.body.id)], (err, row) => {
+    stockCounterDb.selectById(parseInt(req.body.id), (err, row) => {
       if (err)
         return res.status(500).send('Problem occurred during getting counters')
-      console.log('Result: 👉', row);
-      res.status(200).send(row);
       var now = new Date();
-      console.log('Update StockIn section: ', now.toISOString());
-      loggingDb.updateStockIn(
-        [
-          1,
-          now.toISOString(),
-          req.body.counterId
-        ],
-        (err) => {
-          if (err)
-            console.log('Error: ', err);
-            // return res.status(500).send('Problem occurred during updating logs')
+      
+      loggingDb.selectZeroStockInByCounterId(parseInt(req.body.counterId), (err, rows) => {
+        if (err)
+          console.log('Error: ', err);
+
+        console.log('Zero StockIn Logs: 👉', rows);
+        
+        if(rows.length > 0) {
+          loggingDb.updateStockIn(
+            [
+              1,
+              now.toISOString(),
+              rows[0].id
+            ],
+            (err) => {
+              if (err)
+                console.log('Error: ', err);
+                // return res.status(500).send('Problem occurred during updating logs')
+            }
+          )
+        } else {
+          console.log('👉 Not found');
         }
-      )
+      });
+      
+      res.status(200).send(row);
     })
   })
 });

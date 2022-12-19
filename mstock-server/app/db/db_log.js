@@ -68,9 +68,9 @@ class DbLog {
   }
 
   updateCounter(logging, callback) {
-    // console.log('Log by id: 👉 ', logging)
+    console.log('Log by id: 👉 ', logging)
     return this.db.run(
-      'UPDATE logging SET prodQty = ?, productionDate = ? WHERE counterId = (SELECT counterId FROM logging WHERE counterId = ? AND stockInQty = 0 ORDER BY created_at ASC Limit 1)',
+      'UPDATE logging SET prodQty = ?, productionDate = ? WHERE id = ?',
       logging, (err) => {
         callback(err)
       })
@@ -79,7 +79,7 @@ class DbLog {
   updateStockIn(logging, callback) {
     console.log('Log by id: 👉 ', logging)
     return this.db.run(
-      'UPDATE logging SET stockInQty = ?, stockInDate = ? WHERE counterId = (SELECT counterId FROM logging WHERE counterId = ? AND stockInQty = 0 ORDER BY created_at ASC Limit 1)',
+      'UPDATE logging SET stockInQty = ?, stockInDate = ? WHERE id = ?',
       logging, (err) => {
         callback(err)
       })
@@ -96,7 +96,15 @@ class DbLog {
 
   selectByCounterId(id, callback) {
     return this.db.all(
-      `SELECT * FROM logging WHERE id = ? ORDER BY created_at`,
+      `SELECT * FROM logging WHERE counterId = ? ORDER BY created_at`,
+      [id],function(err,row){
+        callback(err,row)
+      })
+  }
+
+  selectZeroStockInByCounterId(id, callback) {
+    return this.db.all(
+      `SELECT * FROM logging WHERE counterId = ? AND stockInQty = 0 ORDER BY created_at`,
       [id],function(err,row){
         callback(err,row)
       })

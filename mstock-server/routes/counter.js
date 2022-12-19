@@ -148,7 +148,7 @@ router.post('/add', async (req, res) => {
           return res
             .status(500)
             .send('Problem occurred during getting counters');
-
+        
         // Update the log
         var now = new Date();
         console.log('Production Qty updated: ', now.toISOString());
@@ -207,30 +207,21 @@ router.post('/drop', async (req, res) => {
          // Update the log
         var now = new Date();
         console.log('Production Qty Empty: ', now.toISOString());
-        // loggingDb.updateCounter(
-        //   [
-        //     0,
-        //     now.toISOString(),
-        //     row.id,
-        //   ],
-        //   (err) => {
-        //     if (err)
-        //       return res
-        //         .status(500)
-        //         .send('Problem ocurred during creating Logging data');
-        //     // console.log('✅ Saved stock: ', rows.stockCode)
-        //   }
-        // );
-        // loggingDb.deleteById(
-        //   [row.id],
-        //   (err) => {
-        //     if (err)
-        //       return res
-        //         .status(500)
-        //         .send('Problem ocurred during creating Logging data');
-        //     // console.log('✅ Saved stock: ', rows.stockCode)
-        //   }
-        // );
+        loggingDb.selectByCounterId(req.body.counterId, (err, rows) => {
+          if (err)
+            console.log('Error: ', err);
+          if(rows.length > 0) {
+            loggingDb.deleteById(rows[0].id,
+              (err) => {
+                if (err)
+                  console.log('Error: ', err);
+                  // return res.status(500).send('Problem occurred during updating logs')
+              }
+            )
+          } else {
+            console.log('Not found');
+          }
+        })
         res.status(200).send(row); 
       });
     }
@@ -251,7 +242,7 @@ router.get('/machine', (req, res) => {
   counterDb.selectByMachine([req.query.machine], (err, rows) => {
     if (err)
       return res.status(500).send('Problem occurred during getting counters');
-    console.log('rows: 👉 ', rows);
+    // console.log('rows: 👉 ', rows);
     res.status(200).send(rows);
   });
 });
