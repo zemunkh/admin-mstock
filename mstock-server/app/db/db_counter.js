@@ -96,7 +96,7 @@ class Db {
   selectByMachine(machine, callback) {
     return this.db.all(
     `SELECT * FROM counter WHERE machine = ? ORDER BY updated_at ASC`,
-    [machine],function(err,rows){
+      machine,function(err,rows){
       callback(err,rows)
     })
   }  

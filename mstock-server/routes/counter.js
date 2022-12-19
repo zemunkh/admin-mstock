@@ -248,9 +248,10 @@ router.get('/all', (req, res) => {
 
 router.get('/machine', (req, res) => {
   console.log('Machine: ✅ ', req.query.machine);
-  counterDb.selectByMachine(req.query.machine, (err, rows) => {
+  counterDb.selectByMachine([req.query.machine], (err, rows) => {
     if (err)
       return res.status(500).send('Problem occurred during getting counters');
+    console.log('rows: 👉 ', rows);
     res.status(200).send(rows);
   });
 });

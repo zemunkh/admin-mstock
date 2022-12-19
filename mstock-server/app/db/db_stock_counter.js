@@ -37,7 +37,7 @@ class Db {
   }
 
   selectAll(callback) {
-    return this.db.all(`SELECT * FROM stockCounter  ORDER BY stock ASC`, function(err,rows){
+    return this.db.all(`SELECT * FROM stockCounter ORDER BY stock ASC`, function(err,rows){
       callback(err,rows)
     })
   }
@@ -51,7 +51,7 @@ class Db {
   }    
 
   selectByCodeAndDate(stock, callback) {
-    return this.db.get(
+    return this.db.all(
     `SELECT * FROM stockCounter WHERE qty > 0 AND stock = ? ORDER BY created_at ASC Limit 1`,
     [stock],function(err,row){
       callback(err,row)
@@ -60,7 +60,7 @@ class Db {
 
   // For readCounterInByCode
   selectByCodeAndMachine(params, callback) { // [stock, 0, machine]
-    return this.db.get(
+    return this.db.all(
     `SELECT * FROM stockCounter WHERE stock = ? AND machine = ? ORDER BY updated_at ASC`,
     params,function(err,row){
       callback(err,row)
