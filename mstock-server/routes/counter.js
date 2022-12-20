@@ -206,8 +206,8 @@ router.post('/drop', async (req, res) => {
 
          // Update the log
         var now = new Date();
-        console.log('Production Qty Empty: ', now.toISOString());
-        loggingDb.selectByCounterId(req.body.counterId, (err, rows) => {
+        // console.log('Production Qty Empty: ', now.toISOString());
+        loggingDb.selectByCounterId(parseInt(req.body.counterId), (err, rows) => {
           if (err)
             console.log('Error: ', err);
           if(rows.length > 0) {
