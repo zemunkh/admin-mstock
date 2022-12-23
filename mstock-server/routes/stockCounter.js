@@ -169,15 +169,14 @@ router.post('/updateStatus', (req, res) => {
     [
       req.body.isPosted,
       now.toISOString(),
-      req.body._id,
+      req.body.id,
     ], (err) => {
     if(err) 
       return res.status(500).send('Problem ocurred during creating stockCounter.')
-    stockCounterDb.selectById(req.body._id, (err, row) => {
+    stockCounterDb.selectById(req.body.id, (err, row) => {
       if (err)
         return res.status(500).send('Problem occurred during getting counters')
-      res.status(200).send({ id: req.body._id });
-
+      res.status(200).send(row);
     })
   })
 });
