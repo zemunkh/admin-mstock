@@ -63,22 +63,24 @@ function createNewLog(log) {
   );
 }
 
-function deleteLogByCounterId(id, callback) {
-  var result = loggingDb.selectByCounterId(parseInt(id), (err, rows) => {
+function deleteLogByCounterId(id)  {
+  loggingDb.selectByCounterId(id, (err, rows) => {
     if (err)
       return {status: 500, msg: 'Problem ocurred during fetching logs'}
+    
+    // console.log('😲 Delete log result: ', rows)
+    
     if(rows.length > 0) {
       loggingDb.deleteById(rows[0].id,
         (err) => {
           if (err)
-            callback({status: 500, msg: 'Problem ocurred during fetching logs'})
+            return{status: 500, msg: 'Problem ocurred during fetching logs'}
           return {status: 200, msg: 'Ok'}
         }
       )
     } else {
       return {status: 404, msg: 'Not found the log'}
     }
-    callback(result)
   })
 }
 

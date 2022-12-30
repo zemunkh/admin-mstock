@@ -110,11 +110,8 @@ router.delete('/delete', async (req, res) => {
     if (err)
       return res.status(500).send('Problem occurred during getting counters');
     // res.status(200).send(rows);
-    deleteLogByCounterId(req.body.id, (val) => {
-      if(val.status == 200) {
-        console.log('🐶 Successfully deleted!')
-      }
-    })
+    deleteLogByCounterId(req.body.id)
+
     counterDb.deleteById([req.body.id], (err) => {
       if (err)
         return res
@@ -185,7 +182,8 @@ router.post('/drop', async (req, res) => {
             .send('Problem occurred during getting counters');
 
         // console.log('Production Qty Empty: ', now.toISOString());
-        // deleteLogByCounterId(req.body.id)
+        deleteLogByCounterId(req.body.id)
+        
         res.status(200).send(row); 
       });
     }
