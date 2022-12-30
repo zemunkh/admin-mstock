@@ -59,7 +59,7 @@ app.use(allowCrossDomain);
 
 app.use('/counter', productionRoutes)
 app.use('/stock_counter', stockCounterRoutes)
-app.use('/logging', loggingRoutes)
+app.use('/logging', loggingRoutes.router)
 
 app.get('/check', (req, res) => {
   console.log('Code: ', req.query.code);

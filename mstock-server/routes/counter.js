@@ -3,9 +3,8 @@ const router = express.Router();
 var bodyParser = require('body-parser');
 
 const db_counter = require('../app/db/db_counter.js');
-const db_log = require('../app/db/db_log.js');
+const { createNewLog, deleteLogByCounterId } = require('./logging');
 
-const loggingDb = new db_log();
 const counterDb = new db_counter();
 
 router.use(bodyParser.urlencoded({ extended: false }));
@@ -44,39 +43,32 @@ router.post('/create', (req, res) => {
           return res
             .status(500)
             .send('Problem occurred during getting counters');
-        res.status(200).send(rows);
         var now = new Date();
-        console.log('Production created: ', now.toISOString());
-        loggingDb.insert(
-          [
-            id,
-            rows.stockCode,
-            rows.stockName,
-            rows.device,
-            now.toISOString(),
-            1,
-            '',
-            0,
-            rows.uom,
-            (req.body.totalQty / req.body.qty),
-            rows.category,
-            rows.stockGroup,
-            rows.class,
-            rows.weight,
-            rows.shift,
-            rows.machine,
-            rows.purchasePrice,
-            rows.shiftDate,
-            rows.created_at,
-          ],
-          (err) => {
-            if (err)
-              return res
-                .status(500)
-                .send('Problem ocurred during creating Logging data');
-            // console.log('✅ Saved stock: ', rows.stockCode)
-          }
-        );
+        console.log('New log creating: ', now.toISOString());
+
+        createNewLog({
+          counterId: id,
+          stockCode: req.body.stockCode,
+          stockName: req.body.stockName,
+          device: req.body.device,
+          productionDate: now.toISOString(),
+          prodQty: 1, 
+          stockInDate: '',
+          stockInQty: 0,
+          uom: req.body.uom,
+          totalQty: (req.body.totalQty / req.body.qty),
+          category: req.body.category,
+          stockGroup: req.body.stockGroup,
+          class: req.body.class,
+          weight: req.body.weight,
+          shift: req.body.shift,
+          machine: req.body.machine,
+          purchasePrice: req.body.purchasePrice,
+          shiftDate: req.body.shiftDate,
+          created_at: req.body.created_at
+        });
+        
+        res.status(200).send(rows);
       });
     }
   );
@@ -118,26 +110,24 @@ router.delete('/delete', async (req, res) => {
     if (err)
       return res.status(500).send('Problem occurred during getting counters');
     // res.status(200).send(rows);
-    loggingDb.deleteByCounterId([req.body.id], (err) => {
-        if (err)
-          return res
-            .status(500)
-            .send('Problem ocurred during fetching Counter');
-        counterDb.deleteById([req.body.id], (err) => {
-          if (err)
-            return res
-              .status(500)
-              .send('Problem occurred during deleting counter');
-          res.status(200).send({ id: req.body.id });
-        });
+    deleteLogByCounterId(req.body.id).then((val) => {
+      if(val.status == 200) {
+        console.log('🐶 Successfully deleted!')
       }
-    );
+    })
+    counterDb.deleteById([req.body.id], (err) => {
+      if (err)
+        return res
+          .status(500)
+          .send('Problem occurred during deleting counter');
+      res.status(200).send({ id: req.body.id });
+    });
   });
 });
 
 router.post('/add', async (req, res) => {
   // const updatedTime = new Date();
-  console.log('ID: ', req.body.id);
+  // console.log('ID: ', req.body.id);
   counterDb.updateQty(
     [req.body.qty, req.body.totalQty, req.body.updated_at, req.body.id],
     (err) => {
@@ -151,39 +141,29 @@ router.post('/add', async (req, res) => {
         
         // Update the log
         var now = new Date();
-        console.log('Production Qty updated: ', now.toISOString());
-        loggingDb.insert(
-          [
-            row.id,
-            row.stockCode,
-            row.stockName,
-            row.device,
-            now.toISOString(),
-            1,
-            '',
-            0,
-            row.uom,
-            (req.body.totalQty / req.body.qty),
-            row.category,
-            row.stockGroup,
-            row.class,
-            row.weight,
-            row.shift,
-            row.machine,
-            row.purchasePrice,
-            row.shiftDate,
-            row.created_at,
-          ],
-          (err) => {
-            if (err)
-              return res
-                .status(500)
-                .send('Problem ocurred during creating Logging data');
-            // console.log('✅ Saved stock: ', rows.stockCode)
-          }
-        );
+        console.log('Production Qty updated - New log creating: ', now.toISOString());
+        createNewLog({
+          counterId: row.id,
+          stockCode: row.stockCode,
+          stockName: row.stockName,
+          device: row.device,
+          productionDate: now.toISOString(),
+          prodQty: 1, 
+          stockInDate: '',
+          stockInQty: 0,
+          uom: row.uom,
+          totalQty: (req.body.totalQty / req.body.qty),
+          category: row.category,
+          stockGroup: row.stockGroup,
+          class: row.class,
+          weight: row.weight,
+          shift: row.shift,
+          machine: row.machine,
+          purchasePrice: row.purchasePrice,
+          shiftDate: row.shiftDate,
+          created_at: row.created_at
+        });
         res.status(200).send(row); 
-
       });
     }
   );
@@ -191,7 +171,7 @@ router.post('/add', async (req, res) => {
 
 router.post('/drop', async (req, res) => {
   // const updatedTime = new Date();
-  console.log('ID: ', req.body.id);
+  // console.log('ID: ', req.body.id);
   counterDb.updateQty(
     [req.body.qty, req.body.totalQty, req.body.updated_at, req.body.id],
     (err) => {
@@ -204,24 +184,8 @@ router.post('/drop', async (req, res) => {
             .status(500)
             .send('Problem occurred during getting counters');
 
-         // Update the log
-        var now = new Date();
         // console.log('Production Qty Empty: ', now.toISOString());
-        loggingDb.selectByCounterId(parseInt(req.body.counterId), (err, rows) => {
-          if (err)
-            console.log('Error: ', err);
-          if(rows.length > 0) {
-            loggingDb.deleteById(rows[0].id,
-              (err) => {
-                if (err)
-                  console.log('Error: ', err);
-                  // return res.status(500).send('Problem occurred during updating logs')
-              }
-            )
-          } else {
-            console.log('Not found');
-          }
-        })
+        // deleteLogByCounterId(req.body.id)
         res.status(200).send(row); 
       });
     }

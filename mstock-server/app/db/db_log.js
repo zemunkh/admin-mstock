@@ -68,7 +68,7 @@ class DbLog {
   }
 
   updateCounter(logging, callback) {
-    console.log('Log by id: 👉 ', logging)
+    // console.log('Log by id: 👉 ', logging)
     return this.db.run(
       'UPDATE logging SET prodQty = ?, productionDate = ? WHERE id = ?',
       logging, (err) => {
@@ -77,7 +77,7 @@ class DbLog {
   }
 
   updateStockIn(logging, callback) {
-    console.log('Log by id: 👉 ', logging)
+    // console.log('Log by id: 👉 ', logging)
     return this.db.run(
       'UPDATE logging SET stockInQty = ?, stockInDate = ? WHERE id = ?',
       logging, (err) => {
@@ -118,6 +118,7 @@ class DbLog {
   }
 
   deleteByCounterId(counterId, callback) {
+    console.log('✅ Somehow came here 😲 by counterId')
     return this.db.run(
       `DELETE FROM logging WHERE counterId = ?`,
       [counterId], function(err) {
@@ -126,6 +127,7 @@ class DbLog {
   }
 
   deleteById(id, callback) {
+    console.log('✅ Somehow came here 😲 by id ')
     return this.db.run(
       `DELETE FROM logging WHERE id = ?`,
       [id], function(err) {
