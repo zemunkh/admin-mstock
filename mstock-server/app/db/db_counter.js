@@ -103,7 +103,7 @@ class Db {
 
   selectByCodeAndMachine(params, callback) { // [stockCode, machine]
     return this.db.get(
-    `SELECT * FROM counter WHERE stockCode = ? AND machine = ? ORDER BY updated_at DESC`,
+    `SELECT * FROM counter WHERE qty > 0 AND stockCode = ? AND machine = ? ORDER BY updated_at DESC`,
     params,function(err,row){
       callback(err,row)
     })

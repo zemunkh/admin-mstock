@@ -122,7 +122,6 @@ router.post('/update', async (req, res) => {
       if (err)
         return res.status(500).send('Problem occurred during getting counters')
       var now = new Date();
-      console.log('CounterId: 👉', req.body.counterId);
       updateZeroStockIn({
         counterId: parseInt(req.body.counterId),
         stockInQty: 1,
@@ -147,9 +146,12 @@ router.post('/updateStatus', (req, res) => {
     ], (err) => {
     if(err) 
       return res.status(500).send('Problem ocurred during creating stockCounter.')
+    
     stockCounterDb.selectById(req.body.id, (err, row) => {
       if (err)
         return res.status(500).send('Problem occurred during getting counters')
+      console.log('Result: 👉', row);
+      
       res.status(200).send(row);
     })
   })

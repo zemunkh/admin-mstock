@@ -110,7 +110,7 @@ router.delete('/delete', async (req, res) => {
     if (err)
       return res.status(500).send('Problem occurred during getting counters');
     // res.status(200).send(rows);
-    deleteLogByCounterId(req.body.id).then((val) => {
+    deleteLogByCounterId(req.body.id, (val) => {
       if(val.status == 200) {
         console.log('🐶 Successfully deleted!')
       }
