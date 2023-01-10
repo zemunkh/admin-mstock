@@ -33,6 +33,7 @@ router.use(bodyParser.json());
 
 
 function createNewLog(log) {
+  var now = new Date();
   loggingDb.insert(
     [
       log.counterId,
@@ -53,7 +54,7 @@ function createNewLog(log) {
       log.machine,
       log.purchasePrice,
       log.shiftDate,
-      log.created_at
+      now.toISOString(),
     ],
     (err) => {
       if (err)

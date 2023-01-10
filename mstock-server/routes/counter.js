@@ -15,6 +15,7 @@ router.post('/create', (req, res) => {
     return res.status(500).send("Null values received. Can't proceed.");
   }
   console.log('✅ Shift date ', req.body.shiftDate)
+  var now = new Date();
   counterDb.insert(
     [
       req.body.stockId,
@@ -43,7 +44,7 @@ router.post('/create', (req, res) => {
           return res
             .status(500)
             .send('Problem occurred during getting counters');
-        var now = new Date();
+        
         console.log('New log creating: ', now.toISOString());
 
         createNewLog({
@@ -65,7 +66,7 @@ router.post('/create', (req, res) => {
           machine: req.body.machine,
           purchasePrice: req.body.purchasePrice,
           shiftDate: req.body.shiftDate,
-          created_at: req.body.created_at
+          created_at: now.toISOString()
         });
         
         res.status(200).send(rows);
@@ -158,7 +159,7 @@ router.post('/add', async (req, res) => {
           machine: row.machine,
           purchasePrice: row.purchasePrice,
           shiftDate: row.shiftDate,
-          created_at: row.created_at
+          created_at: now.toISOString()
         });
         res.status(200).send(row); 
       });
