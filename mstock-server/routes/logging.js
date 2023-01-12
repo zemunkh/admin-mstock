@@ -67,20 +67,18 @@ function createNewLog(log) {
 function deleteLogByCounterId(id)  {
   loggingDb.selectByCounterId(id, (err, rows) => {
     if (err)
-      return {status: 500, msg: 'Problem ocurred during fetching logs'}
-    
-    // console.log('😲 Delete log result: ', rows)
+      console.log('👉 Not found');
     
     if(rows.length > 0) {
       loggingDb.deleteById(rows[0].id,
         (err) => {
           if (err)
-            return{status: 500, msg: 'Problem ocurred during fetching logs'}
-          return {status: 200, msg: 'Ok'}
+            console.log('Error: ', err);
+          console.log('✅ Deleted successfully');
         }
       )
     } else {
-      return {status: 404, msg: 'Not found the log'}
+      console.log('👉 Not found');
     }
   })
 }
@@ -90,8 +88,6 @@ function updateZeroStockIn(params) {
     if (err)
       console.log('Error: ', err);
 
-    // console.log('Zero StockIn Logs: 👉', rows);
-    
     if(rows.length > 0) {
       loggingDb.updateStockIn(
         [
@@ -102,7 +98,6 @@ function updateZeroStockIn(params) {
         (err) => {
           if (err)
             console.log('Error: ', err);
-            // return res.status(500).send('Problem occurred during updating logs')
         }
       )
     } else {
