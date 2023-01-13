@@ -71,7 +71,7 @@ const filters = ref({
 
 onMounted(async () => {
   startDate.value = new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000);
-  await fetch(`http://localhost:8080/logging/range?
+  await fetch(`http://192.168.118.100:8080/logging/range?
     start=${startDate.value.toISOString()}&end=${endDate.value.toISOString()}`)
     .then((res) => res.json())
     .then((json) => {
@@ -89,7 +89,7 @@ onMounted(async () => {
 
 const fetchDataByRange = () => {
   fetch(
-    `http://localhost:8080/logging/range?start=${startDate.value.toISOString()}&end=${endDate.value.toISOString()}`
+    `http://192.168.118.100:8080/logging/range?start=${startDate.value.toISOString()}&end=${endDate.value.toISOString()}`
   )
     .then((res) => res.json())
     .then((json) => {
@@ -110,7 +110,7 @@ const deleteData = async () => {
     const delData = {
       id: el.id,
     };
-    fetch("http://localhost:8080/logging/delete", {
+    fetch("http://192.168.118.100:8080/logging/delete", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
