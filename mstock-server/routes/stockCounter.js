@@ -3,7 +3,7 @@ const router = express.Router();
 var bodyParser = require('body-parser');
 
 const db_stock_counter = require('../app/db/db_stock_counter.js');
-const { deleteLogByCounterId, updateZeroStockIn } = require('./logging');
+const { updateZeroStockIn } = require('./logging');
 
 const stockCounterDb = new db_stock_counter();
 
@@ -45,15 +45,15 @@ router.post('/create', (req, res) => {
         return res.status(500).send('Problem occurred during getting counters')
       
       res.status(200).send(row);
-      console.log('🎯 Counter ID: ', row.counterId)
-      var now = new Date();
-      console.log('Production created: ', now.toISOString());
+    })
 
-      updateZeroStockIn({
-        counterId: parseInt(req.body.counterId),
-        stockInQty: 1,
-        stockInDate: now.toISOString(),
-      })
+    var now = new Date();
+    console.log('Production created: ', now.toISOString());
+
+    updateZeroStockIn({
+      counterId: parseInt(req.body.counterId),
+      stockInQty: 1,
+      stockInDate: now.toISOString(),
     })
   })
 });
@@ -70,7 +70,6 @@ router.get('/status', (req, res) => {
       if (err)
         return res.status(500).send('Problem occurred during getting counters');
       res.status(200).send(rows);
-      // console.log('🎯 Query result: ', rows)
     })
   } else {
     res.status(500).send('Query is not available.');
@@ -83,7 +82,6 @@ router.get('/read', (req, res) => {
     (err, row) => {
       if (err)
         return res.status(500).send('Problem occurred during getting counter');
-      // console.log('res: 👉 ', rows);
       res.status(200).send(row);
     }
   );
@@ -96,7 +94,6 @@ router.get('/machine', (req, res) => {
     (err, rows) => {
       if (err)
         return res.status(500).send('Problem occurred during getting counters');
-      // console.log('res: 👉 ', rows);
       res.status(200).send(rows);
     }
   );
@@ -149,9 +146,7 @@ router.post('/updateStatus', (req, res) => {
     
     stockCounterDb.selectById(req.body.id, (err, row) => {
       if (err)
-        return res.status(500).send('Problem occurred during getting counters')
-      console.log('Result: 👉', row);
-      
+        return res.status(500).send('Problem occurred during getting counters')      
       res.status(200).send(row);
     })
   })
@@ -161,17 +156,10 @@ router.delete('/delete', (req, res) => {
   if (Object.keys(req.body).length === 0) {
     return res.status(500).send("Null values received. Can't proceed.");
   }
-
   stockCounterDb.selectById(parseInt(req.body.id), (err, rows) => {
     if (err)
       return res.status(500).send('Problem occurred during getting counters');
     // res.status(200).send(rows);
-
-    deleteLogByCounterId(req.body.id).then((val) => {
-      if(val.status == 200) {
-        console.log('🐶 Successfully deleted!')
-      }
-    })
 
     stockCounterDb.deleteById([req.body.id], (err) => {
       if (err)

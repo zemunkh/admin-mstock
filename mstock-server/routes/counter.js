@@ -14,7 +14,6 @@ router.post('/create', (req, res) => {
   if (Object.keys(req.body).length === 0) {
     return res.status(500).send("Null values received. Can't proceed.");
   }
-  console.log('✅ Shift date ', req.body.shiftDate)
   var now = new Date();
   counterDb.insert(
     [
@@ -45,8 +44,6 @@ router.post('/create', (req, res) => {
             .status(500)
             .send('Problem occurred during getting counters');
         
-        console.log('New log creating: ', now.toISOString());
-
         createNewLog({
           counterId: id,
           stockCode: req.body.stockCode,
@@ -76,7 +73,6 @@ router.post('/create', (req, res) => {
 });
 
 router.get('/', (req, res) => {
-  // console.log('StockCode: ✅', req.query.stockCode);
   counterDb.selectByCode(req.query.stockCode, (err, rows) => {
     if (err)
       return res.status(500).send('Problem occurred during getting counters');
@@ -85,20 +81,17 @@ router.get('/', (req, res) => {
 });
 
 router.get('/stock/machine', (req, res) => {
-  // console.log('StockCode Machine: ✅', req.query.stockCode + ' : ' + req.query.machine);
   counterDb.selectByCodeAndMachine(
     [req.query.stockCode, req.query.machine],
     (err, rows) => {
       if (err)
         return res.status(500).send('Problem occurred during getting counters');
-      // console.log('res: 👉 ', rows);
       res.status(200).send(rows);
     }
   );
 });
 
 router.get('/order', (req, res) => {
-  // console.log('StockCode: ✅ Order', req.query.stockCode);
   counterDb.selectByCodeAndDate(req.query.stockCode, (err, rows) => {
     if (err)
       return res.status(500).send('Problem occurred during getting counters');
@@ -111,7 +104,11 @@ router.delete('/delete', async (req, res) => {
     if (err)
       return res.status(500).send('Problem occurred during getting counters');
     // res.status(200).send(rows);
-    deleteLogByCounterId(req.body.id)
+    if(req.body.from == 'prod_delete') {
+      deleteLogByCounterId(req.body.id)
+    } else {
+      console.log('From elsewhere')
+    }
 
     counterDb.deleteById([req.body.id], (err) => {
       if (err)
@@ -124,8 +121,6 @@ router.delete('/delete', async (req, res) => {
 });
 
 router.post('/add', async (req, res) => {
-  // const updatedTime = new Date();
-  // console.log('ID: ', req.body.id);
   counterDb.updateQty(
     [req.body.qty, req.body.totalQty, req.body.updated_at, req.body.id],
     (err) => {
@@ -168,8 +163,6 @@ router.post('/add', async (req, res) => {
 });
 
 router.post('/drop', async (req, res) => {
-  // const updatedTime = new Date();
-  // console.log('ID: ', req.body.id);
   counterDb.updateQty(
     [req.body.qty, req.body.totalQty, req.body.updated_at, req.body.id],
     (err) => {
@@ -181,9 +174,11 @@ router.post('/drop', async (req, res) => {
           return res
             .status(500)
             .send('Problem occurred during getting counters');
-
-        // console.log('Production Qty Empty: ', now.toISOString());
-        deleteLogByCounterId(req.body.id)
+        
+        if (req.body.from.includes('Prod-Deduct')) {
+          console.log('Got ya  ✅');
+          deleteLogByCounterId(req.body.id)
+        }
         
         res.status(200).send(row); 
       });
@@ -205,7 +200,6 @@ router.get('/machine', (req, res) => {
   counterDb.selectByMachine([req.query.machine], (err, rows) => {
     if (err)
       return res.status(500).send('Problem occurred during getting counters');
-    // console.log('rows: 👉 ', rows);
     res.status(200).send(rows);
   });
 });

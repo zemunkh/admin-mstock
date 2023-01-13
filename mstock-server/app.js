@@ -11,35 +11,6 @@ var ip = require('ip');
 
 console.log(ip.address());
 
-var task = cron.schedule(
-  '0 9 * * *',
-  () => {
-    var now = new Date();
-    console.log('Started at: ', now.toISOString());
-
-    counterDb.selectAllZeroQty((err, rows) => {
-      if (err) return [];
-      rows.forEach((el) => {
-        var logDate = new Date(el.created_at);
-        var diff = new Date(now.getTime() - logDate.getTime());
-        var diffHours = diff.getHours();
-        // console.log(`Diff hours: ${diffHours}`);
-        if (diffHours >= 24 && el.qty <= 0) {
-          console.log(
-            `Stock Name: ${el.stockCode} : ${el.totalQty} : ${el.created_at}`
-          );
-          counterDb.deleteById(el.id);
-        }
-      });
-    });
-  },
-  {
-    scheduled: false,
-  }
-);
-
-task.start();
-
 app.use(
   bodyParser.urlencoded({
     extended: true,
@@ -68,9 +39,9 @@ app.get('/check', (req, res) => {
 
 // app.use('/', router);
 
-// app.get('/', (req, res) => {
-//   res.json({ message: 'First connection is ok! 👌🏼' });
-// });
+app.get('/', (req, res) => {
+  res.json({ message: 'Server connection is ok! 👌🏼' });
+});
 
 let port = process.env.PORT || 8080;
 // Create Server
