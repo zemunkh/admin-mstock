@@ -156,13 +156,21 @@ router.get('/range', (req, res) => {
     const today = new Date();
     req.query.start = new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000);
   }
-  var tzoffset = new Date().getTimezoneOffset() * 60000; //offset in milliseconds
-  var localStart = new Date(new Date(req.query.start) - tzoffset)
+  // var tzoffset = new Date().getTimezoneOffset() * 60000; //offset in milliseconds
+  // var localStart = new Date(new Date(req.query.start) - tzoffset)
+  //   .toISOString()
+  //   .slice(0, -1);
+  // var localEnd = new Date(new Date(req.query.end) - tzoffset)
+  //   .toISOString()
+  //   .slice(0, -1);
+
+  var localStart = new Date(new Date(req.query.start))
     .toISOString()
     .slice(0, -1);
-  var localEnd = new Date(new Date(req.query.end) - tzoffset)
+  var localEnd = new Date(new Date(req.query.end))
     .toISOString()
     .slice(0, -1);
+
 
   // console.log(`👉 Dates: ${localStart} : ${localEnd}`)
 
