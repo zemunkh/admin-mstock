@@ -15,6 +15,11 @@ import CardBox from "../CardBox.vue";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 // import UserAvatar from "@/components/UserAvatar.vue";
 
+// const PRODUCTION_ADDR = "192.168.118.100";
+const DEVELOPMENT_ADDR = "localhost";
+
+const IP_ADDRESS = DEVELOPMENT_ADDR;
+
 defineProps({
   checkable: Boolean,
 });
@@ -71,7 +76,7 @@ const filters = ref({
 
 onMounted(async () => {
   startDate.value = new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000);
-  await fetch(`http://192.168.118.100:8080/logging/range?
+  await fetch(`http://${IP_ADDRESS}:8080/logging/range?
     start=${startDate.value.toISOString()}&end=${endDate.value.toISOString()}`)
     .then((res) => res.json())
     .then((json) => {
@@ -89,7 +94,7 @@ onMounted(async () => {
 
 const fetchDataByRange = () => {
   fetch(
-    `http://192.168.118.100:8080/logging/range?start=${startDate.value.toISOString()}&end=${endDate.value.toISOString()}`
+    `http://${IP_ADDRESS}:8080/logging/range?start=${startDate.value.toISOString()}&end=${endDate.value.toISOString()}`
   )
     .then((res) => res.json())
     .then((json) => {
@@ -110,7 +115,7 @@ const deleteData = async () => {
     const delData = {
       id: el.id,
     };
-    fetch("http://192.168.118.100:8080/logging/delete", {
+    fetch(`http://${IP_ADDRESS}:8080/logging/delete`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
