@@ -56,42 +56,21 @@ router.post('/create', (req, res) => {
         stockInQty: 1,
         stockInDate: now.toISOString(),
       }).then((rowId) => {
-        console.log("👉 res2: ", rowId);
         // select again
         Promise.resolve(
           selectOneLog(rowId).then((logRow) => {
-            console.log("👉 Selected result: ", logRow);
             if(logRow.qty == 0 || logRow.stockInDate == null) {
-              console.log("👉 Have to update again");
               updateZeroStockIn({
                 counterId: parseInt(req.body.counterId),
                 stockInQty: 1,
                 stockInDate: now.toISOString(),
               })
-            } else {
-              console.log("👉 Already Updated.");
             }
           })
         )
       })
     )
-
   })
-
-  // Promise.resolve(
-  //   selectOneLog(44).then((logRow) => {
-  //     console.log("👉 Selected result: ", logRow);
-  //     if(logRow.qty == 0 || logRow.stockInDate == null) {
-  //       console.log("👉 Have to update again");
-  //       updateZeroStockIn({
-  //         counterId: parseInt(req.body.counterId),
-  //         stockInQty: 1,
-  //         stockInDate: now.toISOString(),
-  //       })
-  //     }
-  //   })
-  // // check the stockIn time or qty
-  // )
 });
 
 router.get('/status', (req, res) => {
