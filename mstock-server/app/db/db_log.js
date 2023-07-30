@@ -3,7 +3,7 @@ const sqlite3 = require('sqlite3').verbose();
 // Log Weight, StockGroup, StockCategory, StockClass, uom, Qty produced
 class DbLog {
   constructor() {
-      this.db = new sqlite3.Database('loggingSqlite.sqlite');
+      this.db = new sqlite3.Database('mugStock.sqlite');
       this.createTable()
   }                
   // created_at TEXT DEFAULT CURRENT_TIMESTAMP
@@ -67,6 +67,15 @@ class DbLog {
     })
   }
 
+  selectById(id, callback) {
+    return this.db.get(
+      `SELECT * FROM logging WHERE id = ?`,
+      [id],function(err,row){
+        callback(err,row)
+      })
+  }
+
+
   updateCounter(logging, callback) {
     // console.log('Log by id: 👉 ', logging)
     return this.db.run(
@@ -84,6 +93,16 @@ class DbLog {
         callback(err)
       })
   }
+
+  updateZeroStockInByCounterId(logging, callback) {
+    return this.db.run(
+      `UPDATE logging SET stockInQty = 1, stockInDate = ? 
+      WHERE counterId = ? AND stockInQty = 0`,
+      logging, (err) => {
+        callback(err)
+      })
+  }
+
 
   updatePostedStatus(logging, callback) {
     // console.log('Log by id: 👉 ', logging)

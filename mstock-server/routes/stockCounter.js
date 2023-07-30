@@ -3,7 +3,7 @@ const router = express.Router();
 var bodyParser = require('body-parser');
 
 const db_stock_counter = require('../app/db/db_stock_counter.js');
-const { updateZeroStockIn } = require('./logging');
+const { updateZeroStockIn, selectOneLog } = require('./logging');
 
 const stockCounterDb = new db_stock_counter();
 
@@ -48,13 +48,28 @@ router.post('/create', (req, res) => {
     })
 
     var now = new Date();
-    console.log('Production created: ', now.toISOString());
 
-    updateZeroStockIn({
-      counterId: parseInt(req.body.counterId),
-      stockInQty: 1,
-      stockInDate: now.toISOString(),
-    })
+
+    Promise.resolve(
+      updateZeroStockIn({
+        counterId: parseInt(req.body.counterId),
+        stockInQty: 1,
+        stockInDate: now.toISOString(),
+      }).then((rowId) => {
+        // select again
+        Promise.resolve(
+          selectOneLog(rowId).then((logRow) => {
+            if(logRow.qty == 0 || logRow.stockInDate == null) {
+              updateZeroStockIn({
+                counterId: parseInt(req.body.counterId),
+                stockInQty: 1,
+                stockInDate: now.toISOString(),
+              })
+            }
+          })
+        )
+      })
+    )
   })
 });
 
