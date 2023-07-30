@@ -3,7 +3,7 @@ const router = express.Router();
 var bodyParser = require('body-parser');
 
 const db_stock_counter = require('../app/db/db_stock_counter.js');
-const { updateZeroStockIn } = require('./logging');
+const { updateZeroStockIn, selectOneLog } = require('./logging');
 
 const stockCounterDb = new db_stock_counter();
 
@@ -48,14 +48,50 @@ router.post('/create', (req, res) => {
     })
 
     var now = new Date();
-    console.log('Production created: ', now.toISOString());
 
-    updateZeroStockIn({
-      counterId: parseInt(req.body.counterId),
-      stockInQty: 1,
-      stockInDate: now.toISOString(),
-    })
+
+    Promise.resolve(
+      updateZeroStockIn({
+        counterId: parseInt(req.body.counterId),
+        stockInQty: 1,
+        stockInDate: now.toISOString(),
+      }).then((rowId) => {
+        console.log("👉 res2: ", rowId);
+        // select again
+        Promise.resolve(
+          selectOneLog(rowId).then((logRow) => {
+            console.log("👉 Selected result: ", logRow);
+            if(logRow.qty == 0 || logRow.stockInDate == null) {
+              console.log("👉 Have to update again");
+              updateZeroStockIn({
+                counterId: parseInt(req.body.counterId),
+                stockInQty: 1,
+                stockInDate: now.toISOString(),
+              })
+            } else {
+              console.log("👉 Already Updated.");
+            }
+          })
+        )
+      })
+    )
+
   })
+
+  // Promise.resolve(
+  //   selectOneLog(44).then((logRow) => {
+  //     console.log("👉 Selected result: ", logRow);
+  //     if(logRow.qty == 0 || logRow.stockInDate == null) {
+  //       console.log("👉 Have to update again");
+  //       updateZeroStockIn({
+  //         counterId: parseInt(req.body.counterId),
+  //         stockInQty: 1,
+  //         stockInDate: now.toISOString(),
+  //       })
+  //     }
+  //   })
+  // // check the stockIn time or qty
+  // )
 });
 
 router.get('/status', (req, res) => {

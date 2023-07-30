@@ -3,7 +3,7 @@ const sqlite3 = require('sqlite3').verbose();
 // Stock Counter - StockIn counting card database
 class Db {
   constructor() {
-      this.db = new sqlite3.Database('stockCounterSqlite.sqlite');
+      this.db = new sqlite3.Database('mugStock.sqlite');
       this.createTable()
   }                
   // created_at TEXT DEFAULT CURRENT_TIMESTAMP

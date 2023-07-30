@@ -84,26 +84,42 @@ function deleteLogByCounterId(id)  {
 }
 
 function updateZeroStockIn(params) {
-  loggingDb.selectZeroStockInByCounterId(params.counterId, (err, rows) => {
-    if (err)
-      console.log('Error: ', err);
+  return new Promise((resolve, reject) => {
+    loggingDb.selectZeroStockInByCounterId(params.counterId, (err, rows) => {
+      if (err) reject(err)
 
-    if(rows.length > 0) {
-      loggingDb.updateStockIn(
-        [
-          params.stockInQty,
-          params.stockInDate,
-          rows[0].id
-        ],
-        (err) => {
-          if (err)
-            console.log('Error: ', err);
-        }
-      )
-    } else {
-      console.log('👉 Not found');
-    }
+      console.log("👉ROWID ", rows[0].id);
+
+      resolve(rows[0].id)
+      if(rows.length > 0) {
+        loggingDb.updateStockIn(
+          [
+            params.stockInQty,
+            params.stockInDate,
+            rows[0].id
+          ],
+          (err) => {
+            if (err) {
+              reject('Update error')
+            }
+          }
+        )
+      } else {
+        reject('Empty')
+      }
+    });
   });
+}
+
+function selectOneLog(rowId) {
+  return new Promise((resolve, reject) => {
+    loggingDb.selectById(rowId, (err, row) => {
+      if (err) {
+        reject('Update error')
+      }
+      resolve(row)
+    })
+  })
 }
 
 router.post('/create', (req, res) => {
@@ -196,4 +212,6 @@ module.exports = {
   createNewLog,
   deleteLogByCounterId,
   updateZeroStockIn,
+  selectOneLog
 };
+
