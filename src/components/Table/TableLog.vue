@@ -15,10 +15,10 @@ import CardBox from "../CardBox.vue";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 // import UserAvatar from "@/components/UserAvatar.vue";
 
-// const PRODUCTION_ADDR = "192.168.118.100";
-const DEVELOPMENT_ADDR = "localhost";
+const PRODUCTION_ADDR = "192.168.118.100";
+//const DEVELOPMENT_ADDR = "localhost";
 
-const IP_ADDRESS = DEVELOPMENT_ADDR;
+const IP_ADDRESS = PRODUCTION_ADDR;
 
 defineProps({
   checkable: Boolean,

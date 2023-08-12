@@ -49,27 +49,12 @@ router.post('/create', (req, res) => {
 
     var now = new Date();
 
+    updateZeroStockIn({
+      counterId: parseInt(req.body.counterId),
+      stockInQty: 1,
+      stockInDate: now.toISOString(),
+    })
 
-    Promise.resolve(
-      updateZeroStockIn({
-        counterId: parseInt(req.body.counterId),
-        stockInQty: 1,
-        stockInDate: now.toISOString(),
-      }).then((rowId) => {
-        // select again
-        Promise.resolve(
-          selectOneLog(rowId).then((logRow) => {
-            if(logRow.qty == 0 || logRow.stockInDate == null) {
-              updateZeroStockIn({
-                counterId: parseInt(req.body.counterId),
-                stockInQty: 1,
-                stockInDate: now.toISOString(),
-              })
-            }
-          })
-        )
-      })
-    )
   })
 });
 

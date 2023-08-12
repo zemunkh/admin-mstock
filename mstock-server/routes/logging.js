@@ -84,30 +84,26 @@ function deleteLogByCounterId(id)  {
 }
 
 function updateZeroStockIn(params) {
-  return new Promise((resolve, reject) => {
-    loggingDb.selectZeroStockInByCounterId(params.counterId, (err, rows) => {
-      if (err) reject(err)
 
-      console.log("👉ROWID ", rows[0].id);
+  loggingDb.selectZeroStockInByCounterId(params.counterId, (err, rows) => {
+    if (err)
+      console.log('Error: ', err);
 
-      resolve(rows[0].id)
-      if(rows.length > 0) {
-        loggingDb.updateStockIn(
-          [
-            params.stockInQty,
-            params.stockInDate,
-            rows[0].id
-          ],
-          (err) => {
-            if (err) {
-              reject('Update error')
-            }
-          }
-        )
-      } else {
-        reject('Empty')
-      }
-    });
+    if(rows.length > 0) {
+      loggingDb.updateStockIn(
+        [
+          params.stockInQty,
+          params.stockInDate,
+          rows[0].id
+        ],
+        (err) => {
+          if (err)
+            console.log('Error: ', err);
+        }
+      )
+    } else {
+      console.log('👉 Not found');
+    }
   });
 }
 

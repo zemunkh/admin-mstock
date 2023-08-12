@@ -33,3 +33,4 @@ coverage
 *.sw?
 *.laravel-guide
 *.nuxt-guide
+*.sqlite
