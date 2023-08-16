@@ -80,6 +80,14 @@ router.get('/', (req, res) => {
   });
 });
 
+router.get('/one', (req, res) => {
+  counterDb.selectById(req.query.id, (err, rows) => {
+    if (err)
+      return res.status(500).send('Problem occurred during getting counter by id');
+    res.status(200).send(rows);
+  });
+});
+
 router.get('/stock/machine', (req, res) => {
   counterDb.selectByCodeAndMachine(
     [req.query.stockCode, req.query.machine],
@@ -92,6 +100,7 @@ router.get('/stock/machine', (req, res) => {
 });
 
 router.get('/order', (req, res) => {
+  console.log("Here >>>>>>");
   counterDb.selectByCodeAndDate(req.query.stockCode, (err, rows) => {
     if (err)
       return res.status(500).send('Problem occurred during getting counters');
