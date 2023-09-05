@@ -49,30 +49,36 @@ router.post('/create', (req, res) => {
 
     var now = new Date();
 
-    Promise.resolve(
-      updateZeroStockIn({
-        counterId: parseInt(req.body.counterId),
-        stockInQty: 1,
-        stockInDate: now.toISOString(),
-      }).then((rowId) => {
-        console.log("👉 res2: ", rowId);
-        // select again
-        Promise.resolve(
-          selectOneLog(rowId).then((logRow) => {
-            if(logRow.qty == 0 || logRow.stockInDate == null) {
-              console.log("👉 Have to update again");
-              updateZeroStockIn({
-                counterId: parseInt(req.body.counterId),
-                stockInQty: 1,
-                stockInDate: now.toISOString(),
-              })
-            } else {
-              console.log("👉 Already Updated.");
-            }
-          })
-        )
-      })
-    )
+    updateZeroStockIn({
+      counterId: parseInt(req.body.counterId),
+      stockInQty: 1,
+      stockInDate: now.toISOString(),
+    });
+
+    // Promise.resolve(
+    //   updateZeroStockIn({
+    //     counterId: parseInt(req.body.counterId),
+    //     stockInQty: 1,
+    //     stockInDate: now.toISOString(),
+    //   }).then((rowId) => {
+    //     console.log("👉 res2: ", rowId);
+    //     // select again
+    //     Promise.resolve(
+    //       selectOneLog(rowId).then((logRow) => {
+    //         if(logRow.qty == 0 || logRow.stockInDate == null) {
+    //           console.log("👉 Have to update again");
+    //           updateZeroStockIn({
+    //             counterId: parseInt(req.body.counterId),
+    //             stockInQty: 1,
+    //             stockInDate: now.toISOString(),
+    //           })
+    //         } else {
+    //           console.log("👉 Already Updated.");
+    //         }
+    //       })
+    //     )
+    //   })
+    // )
 
   })
 });
